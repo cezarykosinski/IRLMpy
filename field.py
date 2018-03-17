@@ -7,6 +7,7 @@ class Field:
         self.value = 0
         self.groupId = gc['noGroupId']
         self.neighboursValues = []
+        self.neighboursPositions = []
 
     def calculate(self):
         numOfConsideredNeighbours = sum([len(list(filter(lambda x: not(x is None), row))) for row in self.neighboursValues])

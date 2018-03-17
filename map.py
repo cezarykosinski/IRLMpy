@@ -22,15 +22,19 @@ class Map:
     def __getFieldNeighbours(self, positionTuple):
         x, y = positionTuple
         mns = fc['mooreNeighbourhoodSize'];
+        
+        corner = [[fc['default_value']]*mns]*mns
+        leftFields = corner + self.__eastbound + corner
+        midFields = self.__northbound + [[f.value for f in frow] for frow in self.__fields] + self.__southbound
+        rightFields = corner + self.__westbound + corner
+        allFields = [i+j+g for i,j,g in zip(leftFields, midFields, rightFields)]
 
         isInRange = lambda x, y: (x >= 0 and x < mc['size'] 
-                           and y >= 0 and y < mc['size'])
+                              and y >= 0 and y < mc['size'])
 
-        neighboursValues = [[self.__fields[i+x][j+y].value 
-                            if isInRange(i+x, j+y) 
-                            else None 
-                            for j in range(-mns, mns+1)] 
-                            for i in range(-mns, mns+1)]
+        neighboursValues = [[allFields[i+x][j+y] 
+                            for j in range(0, 2*mns+1)] 
+                            for i in range(0, 2*mns+1)]
         neighboursPositions = [self.__fields[i+x][j+y].position 
                                 if isInRange(i+x, j+y) 
                                 else None 
@@ -43,8 +47,15 @@ class Map:
             for f in row: 
                 f.neighboursValues, f.neighboursPositions = self.__getFieldNeighbours(f.position)
 
-    def __init__(self, id):
+    def __init__(self, id, northbound=[[fc['default_value']]*mc['size']]*fc['mooreNeighbourhoodSize'],
+                           westbound=[[fc['default_value']]*fc['mooreNeighbourhoodSize']]*mc['size'],
+                           southbound=[[fc['default_value']]*mc['size']]*fc['mooreNeighbourhoodSize'],
+                           eastbound=[[fc['default_value']]*fc['mooreNeighbourhoodSize']]*mc['size']):
         self.id = id;
+        self.__northbound = northbound
+        self.__westbound = westbound
+        self.__southbound = southbound
+        self.__eastbound = eastbound
         self.mapsNeighbours = []
         self.isAccessed = False
         self.__groups = []
@@ -73,9 +84,11 @@ class Map:
                     newGroup.findRestOfTheFields(self.__fields)
                     self.__groups.append(newGroup)
 
-    def connectGroups(self):
-        fun = lambda g1, g2: group.ConcatAndDrill(g1,g2, self.__fields)
-        self.__groups = reduce(fun, self.__groups)
+    def groupsWayoutsProviding(self):
+        for g in self.__groups:
+            g.wayoutProviding(fields)
+        #fun = lambda g1, g2: group.wayoutProviding(g1,g2, self.__fields)
+        #self.__groups = reduce(fun, self.__groups)
 
     def display(self):
         for row in self.__fields:
