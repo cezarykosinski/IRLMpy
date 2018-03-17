@@ -8,6 +8,12 @@ _Currently not usable._
 * [GROUP/MAP] Implementing map escape invariant.
 * [MAP] Reimplementing CA to take under consideration borders of neighbours.
 
+#### TO_REFACTOR:
+- [ ] camelCase or snake_case
+- [ ] append or +=
+- [ ] constants as maps or classes
+- [ ] logging(?)
+
 #### STAGE 1
 ##### Single map operations
 
