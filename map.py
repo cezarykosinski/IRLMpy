@@ -72,7 +72,7 @@ class Map:
                     f.calculate()
             self.__setFieldsNeighbours();
 
-    def access(self):
+    def access(self): #direction?
         raise NotImplementedError()
         IsAccessed = true;
 
@@ -86,9 +86,7 @@ class Map:
 
     def groupsWayoutsProviding(self):
         for g in self.__groups:
-            g.wayoutProviding(fields)
-        #fun = lambda g1, g2: group.wayoutProviding(g1,g2, self.__fields)
-        #self.__groups = reduce(fun, self.__groups)
+            g.wayoutProviding(self.__fields)
 
     def display(self):
         for row in self.__fields:

@@ -12,7 +12,8 @@ _Currently not usable._
 - [ ] camelCase or snake_case
 - [ ] append or +=
 - [ ] constants as maps or classes
-- [ ] logging(?)
+- [ ] logging(?) 
+- [ ] swap temporary solutions with the stl ones
 
 #### STAGE 1
 ##### Single map operations

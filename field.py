@@ -4,7 +4,7 @@ from constants import fieldConstants as fc
 class Field:
     def __init__(self, x, y):
         self.position = x, y
-        self.value = 0
+        self.value = fc['default_value']
         self.groupId = gc['noGroupId']
         self.neighboursValues = []
         self.neighboursPositions = []
