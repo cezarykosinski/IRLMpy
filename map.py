@@ -6,11 +6,12 @@ from constants import groupConstants as gc
 from constants import mapConstants as mc
 
 class Map:
+
     def __genererateNoise(self):
         fieldsNo = mc['size']**2;
         ammountOfNoise = 0;
 
-        seed(mc['seed'])
+        seed(ctx.id)
 
         while ((ammountOfNoise / fieldsNo) < mc['initialRatio']):
             x = randint(0, mc['size']-1)
@@ -19,7 +20,8 @@ class Map:
                 self.__fields[x][y].value = 1
                 ammountOfNoise += 1
 
-    def __getFieldNeighbours(self, positionTuple):
+    def __getFieldNeighbours(self, positionTuple): 
+    #maybe better on the field side to store references to the neighbours instead of just the positions, then we could've just update them locally from the field itself (clearer the code would be)
         x, y = positionTuple
         mns = fc['mooreNeighbourhoodSize'];
         
@@ -47,16 +49,19 @@ class Map:
             for f in row: 
                 f.neighboursValues, f.neighboursPositions = self.__getFieldNeighbours(f.position)
 
-    def __init__(self, id, northbound=[[fc['default_value']]*mc['size']]*fc['mooreNeighbourhoodSize'],
-                           westbound=[[fc['default_value']]*fc['mooreNeighbourhoodSize']]*mc['size'],
-                           southbound=[[fc['default_value']]*mc['size']]*fc['mooreNeighbourhoodSize'],
-                           eastbound=[[fc['default_value']]*fc['mooreNeighbourhoodSize']]*mc['size']):
+    def __init__(self, id, ctx,
+                        northbound=[[fc['default_value']]*mc['size']]*fc['mooreNeighbourhoodSize'],
+                        westbound=[[fc['default_value']]*fc['mooreNeighbourhoodSize']]*mc['size'],
+                        southbound=[[fc['default_value']]*mc['size']]*fc['mooreNeighbourhoodSize'],
+                        eastbound=[[fc['default_value']]*fc['mooreNeighbourhoodSize']]*mc['size']):
         self.id = id;
+        self.__context = ctx
+
         self.__northbound = northbound
         self.__westbound = westbound
         self.__southbound = southbound
         self.__eastbound = eastbound
-        self.mapsNeighbours = []
+        
         self.isAccessed = False
         self.__groups = []
         self.__fields = [[Field(fi, fj) for fj in range(mc['size'])] 
@@ -64,6 +69,16 @@ class Map:
 
         self.__genererateNoise();
         self.__setFieldsNeighbours();
+        self.calculate()
+        self.groupFields()
+
+    def getNorthBound(self):
+        
+    def getSouthBound(self):
+    
+    def getEastBound(self):
+    
+    def getWestBound(self):
 
     def calculate(self):
         for i in range(mc['numberOfIterations']):
@@ -75,6 +90,9 @@ class Map:
     def access(self): #direction?
         raise NotImplementedError()
         IsAccessed = true;
+        self.groupsWayoutsProviding()
+
+
 
     def groupFields(self):
         for row in self.__fields:
