@@ -1,26 +1,30 @@
 class ConstantsBaseClass:
+    """
+    todo
+    """
     def __setattr__(self, name, value):
-        if(name in self.__dict__):
-            raise NameError("Class is locked. Can't change attributes (%s)."%name)
+        if name in self.__dict__:
+            raise NameError("Class is locked. Can't change attributes (%s)." % name)
         self.__dict__[name] = value
 
-groupConstants={
+
+groupConstants = {
     'noGroupId': -1
     }
 
-fieldConstants={
+fieldConstants = {
     'default_value': 0,
-    'wages' : [[1, 1, 1], [1, 0, 1], [1, 1, 1]],
-    'mooreNeighbourhoodSize' : 1,
-    'condition' : 0.4, #NOT GENERIC
+    'wages': [[1, 1, 1], [1, 0, 1], [1, 1, 1]],
+    'mooreNeighbourhoodSize': 1,
+    'condition': 0.4, #NOT GENERIC
     'NaF': None
     }
     
-mapConstants={
-    'size' : 25,
-    'initialRatio' : 0.525,
-    'numberOfIterations' : 1,
-    'seed' : 666,
+mapConstants = {
+    'size': 25,
+    'initialRatio': 0.525,
+    'numberOfIterations': 1,
+    'seed': 777,
     }
     
 #class fieldConstants(ConstantsBaseClass):
