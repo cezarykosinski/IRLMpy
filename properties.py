@@ -5,13 +5,13 @@ class ConstantsBaseClass:
         self.__dict__[name] = value
 
 
-fieldConstants = {
+FIELD_CONSTANTS = {
     'DEFAULT_VALUE': 0,
     #'NaF_VALUE': 0 
     }
     
-propertiesConstants = {
-    'size' : 25,
+PROPERTIES_CONSTANTS = {
+    'size': 25,
     'initialRatio': 0.525,
     'mooreNeighbourhoodSize': 1,
     'numberOfIterations': 4,

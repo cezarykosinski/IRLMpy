@@ -20,18 +20,18 @@ class MapContext:
         :return:
         """
         self.maps.update({(0, 0): m.Map((0, 0), self)})
-        self.accessMap((0, 0))
+        self.access_map((0, 0))
 
-    def accessMap(self, map_id): #, position = None):
+    def access_map(self, map_id): #, position = None):
         """
         todo
         :param map_id:
         :return:
         """
-        self.current_map = self.maps.get((0,0))
-        self.generateNeighbours()
+        self.current_map = self.maps.get((0, 0))
+        self.generate_neighbours()
 
-    def generateNeighbours(self):
+    def generate_neighbours(self):
         """
         todo
         :return:

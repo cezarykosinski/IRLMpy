@@ -1,73 +1,73 @@
-from constants import groupConstants, mapConstants
+from constants import GROUP_CONSTANTS, MAP_CONSTANTS
 
 
 class Group:
     """
     todo
     """
-    latestId = 0
+    LASTEST_ID = 0
     
     def __init__(self, starting_field):
         """
         todo
         :param starting_field:
         """
-        self.id = Group.latestId
-        self.__startingFieldPosition = starting_field.position
+        self.id = Group.LASTEST_ID
+        self.__starting_field_position = starting_field.position
         self.__boarders = []
         self.__fields = []
-        Group.latestId += 1
+        Group.LASTEST_ID += 1
     
-    def findRestOfTheFields(self, fields):
+    def find_rest_of_the_fields(self, fields):
         """
         todo
         :param fields:
         :return:
         """
-        queue = [self.__startingFieldPosition]
+        queue = [self.__starting_field_position]
         while queue:
             x, y = queue.pop()
             # todo: 2 times iteration through one list -> save it to var??
             self.__fields.append(fields[x][y])
             # todo: v
-            fields[x][y].groupId = self.id
-            for npos in fields[x][y].neighboursPositions:
+            fields[x][y].group_id = self.id
+            for npos in fields[x][y].neighbours_positions:
                 if npos:
                     nx, ny = npos
-                    if fields[nx][ny].value == 0 and fields[nx][ny].groupId == groupConstants['noGroupId']: #fixed field value condition
+                    if fields[nx][ny].value == 0 and fields[nx][ny].group_id == GROUP_CONSTANTS['noGroupId']: #fixed field value condition
                         queue.append((nx, ny))
     
-    def updateTheBoarders(self):
+    def update_the_boarders(self):
         """
         todo
         :return:
         """
         self.__boarders = [f.position for f in self.__fields if (1 in f.neighboursValues)]
 
-    def __hasWayoutAlready(self):
+    def __has_wayout_already(self):
         """
         todo
         :return:
         """
-        return len([pos for pos in self.__boarders if (mapConstants['size']-1 in pos)]) > 0
+        return len([pos for pos in self.__boarders if (MAP_CONSTANTS['size'] - 1 in pos)]) > 0
     
-    def __getPath(self, pA, pB):
+    def __get_path(self, p_a, p_b):
         """
         todo
-        :param pA:
-        :param pB:
+        :param p_a:
+        :param p_b:
         :return:
         """
-        xv, yv = pA[0] - pB[0], pA[1] - pB[1]
+        xv, yv = p_a[0] - p_b[0], p_a[1] - p_b[1]
         step = xv / yv
         pts = []
         i = 0
         for j in range(yv):
-            pts += [(pA[0] + int(i), pA[1] + j), (pA[0] + int(i) + 1, pA[1] + j)]
+            pts += [(p_a[0] + int(i), p_a[1] + j), (p_a[0] + int(i) + 1, p_a[1] + j)]
             i += step
         return pts
 
-    def __drillWayout(self, fields, starting_position, destination_position):
+    def __drill_wayout(self, fields, starting_position, destination_position):
         """
         todo
         :param fields:
@@ -75,11 +75,11 @@ class Group:
         :param destination_position:
         :return:
         """
-        pathPoints = self.__getPath(starting_position, destination_position)
-        for px, py in pathPoints:
+        path_points = self.__get_path(starting_position, destination_position)
+        for px, py in path_points:
             fields[px][py].value = 0
             
-    def __closestGroupWithWayout(self, fields, position):
+    def __closest_group_with_wayout(self, fields, position):
         """
         todo
         :param fields:
@@ -91,29 +91,29 @@ class Group:
             x, y, counter = queue[0]
             # todo : FIFO
             queue = queue[1:]
-            for npos in fields[x][y].neighboursPositions:
+            for npos in fields[x][y].neighbours_positions:
                 if npos:
                     nx, ny = npos
                     if not fields[nx][ny].groupId == self.id or (fields[nx][ny].value == 0
-                                                                 and (not (mapConstants['size']-1 in fields[nx][ny].position))):
-                        return counter, fields[nx][ny].groupId, (nx, ny) # todo discuss if proper: legacy x, y -> tuple ??
+                                                                 and (not (MAP_CONSTANTS['size'] - 1 in fields[nx][ny].position))):
+                        return counter, fields[nx][ny].group_id, (nx, ny) # todo discuss if proper: legacy x, y -> tuple ??
                     # todo : hardcoded, fixed constant in condition #and wishful mechanism of "_" that matches with everything
                     elif fields[nx][ny].value == 0 and not (nx, ny, _) in queue: # todo :)
                         queue.append((nx, ny, counter + 1))
 
-    def wayoutProviding(self, fields):
+    def wayout_providing(self, fields):
         """
         todo
         :param fields:
         :return:
         """
-        self.updateTheBoarders()
-        if not self.__hasWayoutAlready():
+        self.update_the_boarders()
+        if not self.__has_wayout_already():
             # todo :o hmm?
-            mindist = mapConstants['size'], mingroupId = self.id, minsource = self.__startingFieldPosition,  minendpoint = self.__startingFieldPosition
+            mindist = MAP_CONSTANTS['size'], mingroup_id = self.id, minsource = self.__starting_field_position, minendpoint = self.__starting_field_position
             for pos in self.__boarders:
-                distance, groupId, endpoint = self.__closestGroupWithWayout(fields, pos)
+                distance, group_id, endpoint = self.__closest_group_with_wayout(fields, pos)
                 if distance < mindist:
                     # todo :o hmm?
-                    mindist = distance, mingroupId = groupId, minsource = f, minendpoint = endpoint
-            self.__drillWayout(fields, minsource, minendpoint)
+                    mindist = distance, mingroup_id = group_id, minsource = f, minendpoint = endpoint
+            self.__drill_wayout(fields, minsource, minendpoint)

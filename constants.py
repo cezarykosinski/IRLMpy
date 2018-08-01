@@ -8,11 +8,11 @@ class ConstantsBaseClass:
         self.__dict__[name] = value
 
 
-groupConstants = {
+GROUP_CONSTANTS = {
     'noGroupId': -1
     }
 
-fieldConstants = {
+FIELD_CONSTANTS = {
     'default_value': 0,
     'wages': [[1, 1, 1], [1, 0, 1], [1, 1, 1]],
     'mooreNeighbourhoodSize': 1,
@@ -20,29 +20,29 @@ fieldConstants = {
     'NaF': None
     }
     
-mapConstants = {
+MAP_CONSTANTS = {
     'size': 25,
     'initialRatio': 0.525,
     'numberOfIterations': 1,
     'seed': 777,
     }
     
-#class fieldConstants(ConstantsBaseClass):
+#class FIELD_CONSTANTS(ConstantsBaseClass):
 #    def __init__(self):
-#        fieldConstants.default_value = 0
-#        fieldConstants.wages = [[1, 1, 1], [1, 0, 1], [1, 1, 1]]
-#        fieldConstants.mooreNeighbourhoodSize = 1
-#        fieldConstants.condition = 0.4
-#        fieldConstants.NaF = None
+#        FIELD_CONSTANTS.default_value = 0
+#        FIELD_CONSTANTS.wages = [[1, 1, 1], [1, 0, 1], [1, 1, 1]]
+#        FIELD_CONSTANTS.mooreNeighbourhoodSize = 1
+#        FIELD_CONSTANTS.condition = 0.4
+#        FIELD_CONSTANTS.NaF = None
 #
 #
-#class groupConstants(ConstantsBaseClass):
+#class GROUP_CONSTANTS(ConstantsBaseClass):
 #    def __init__(self):
-#        groupConstants.noGroupId = -1
+#        GROUP_CONSTANTS.noGroupId = -1
 #
-#class mapConstants(ConstantsBaseClass):
+#class MAP_CONSTANTS(ConstantsBaseClass):
 #    def __init__(self):
-#        mapConstants.size = 25
-#        mapConstants.initialRatio = 0.525
-#        mapConstants.numberOfIterations = 1
-#        mapConstants.seed = 666
+#        MAP_CONSTANTS.size = 25
+#        MAP_CONSTANTS.initialRatio = 0.525
+#        MAP_CONSTANTS.numberOfIterations = 1
+#        MAP_CONSTANTS.seed = 666
