@@ -1,6 +1,6 @@
 from random import seed, randint
-from field import Field
-from group import Group
+from models.field import Field
+from models.group import Group
 from constants import fieldConstants as fc
 from constants import groupConstants as gc
 from constants import mapConstants as mc
@@ -130,7 +130,7 @@ class Map:
         :return:
         """
         raise NotImplementedError()
-        IsAccessed = true
+        self.isAccessed = true
         self.groupsWayoutsProviding()
 
     def groupFields(self):

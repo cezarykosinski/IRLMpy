@@ -1,4 +1,4 @@
-import map as m
+from models import map as m
 
 
 class MapContext:
