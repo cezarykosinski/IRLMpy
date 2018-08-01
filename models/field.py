@@ -8,8 +8,8 @@ class Field:
     """
     def __init__(self, x, y):
         self.position = x, y
-        self.value = FC['default_value']
-        self.groupId = GC['noGroupId']
+        self.value = FC['DEFAULT_VALUE']
+        self.groupId = GC['NO_GROUP_ID']
         self.neighbours_values = []
         self.neighbours_positions = []
 
@@ -21,10 +21,10 @@ class Field:
         num_of_considered_neighbours = sum([len(list(filter(lambda x: not(x is None), row))) for row in self.neighbours_values])
         
         waged_neighbours_values = [sum([n * w if n else 0 for (n, w) in list(zip(nrow, wrow))])
-                                   for (nrow, wrow) in list(zip(self.neighbours_values, FC['wages']))]
+                                   for (nrow, wrow) in list(zip(self.neighbours_values, FC['WAGES']))]
         result = sum(waged_neighbours_values) / num_of_considered_neighbours
 
-        self.value = 1 if result > FC['condition'] else 0 #NOT GENERIC
+        self.value = 1 if result > FC['CONDITION'] else 0 #NOT GENERIC
 
     def display(self):
         """

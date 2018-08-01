@@ -7,15 +7,15 @@ class ConstantsBaseClass:
 
 FIELD_CONSTANTS = {
     'DEFAULT_VALUE': 0,
-    #'NaF_VALUE': 0 
+    #'NAF_VALUE': 0
     }
     
 PROPERTIES_CONSTANTS = {
-    'size': 25,
-    'initialRatio': 0.525,
-    'mooreNeighbourhoodSize': 1,
-    'numberOfIterations': 4,
-    'condition': 0.4,
-    'wages': [1, 1, 1, 1, 1, 1, 1, 1, 1],
-    'seed': 777,
+    'SIZE': 25,
+    'INITIAL_RATIO': 0.525,
+    'MOORE_NEIGHBOURHOOD_SIZE': 1,
+    'NUMBER_OF_ITERATIONS': 4,
+    'CONDITION': 0.4,
+    'WAGES': [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    'SEED': 777,
     }

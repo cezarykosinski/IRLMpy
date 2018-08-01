@@ -12,10 +12,10 @@ class Map:
     """
 
     def __init__(self, id, ctx,
-                 northbound=[[FC['default_value']] * MC['size']] * FC['mooreNeighbourhoodSize'],
-                 westbound=[[FC['default_value']] * FC['mooreNeighbourhoodSize']] * MC['size'],
-                 southbound=[[FC['default_value']] * MC['size']] * FC['mooreNeighbourhoodSize'],
-                 eastbound=[[FC['default_value']] * FC['mooreNeighbourhoodSize']] * MC['size']):
+                 northbound=[[FC['DEFAULT_VALUE']] * MC['SIZE']] * FC['MOORE_NEIGHBOURHOOD_SIZE'],
+                 westbound=[[FC['DEFAULT_VALUE']] * FC['MOORE_NEIGHBOURHOOD_SIZE']] * MC['SIZE'],
+                 southbound=[[FC['DEFAULT_VALUE']] * MC['SIZE']] * FC['MOORE_NEIGHBOURHOOD_SIZE'],
+                 eastbound=[[FC['DEFAULT_VALUE']] * FC['MOORE_NEIGHBOURHOOD_SIZE']] * MC['SIZE']):
         self.id = id
         self.__context = ctx
 
@@ -26,8 +26,8 @@ class Map:
 
         self.is_accessed = False
         self.__groups = []
-        self.__fields = [[Field(fi, fj) for fj in range(MC['size'])]
-                         for fi in range(MC['size'])]
+        self.__fields = [[Field(fi, fj) for fj in range(MC['SIZE'])]
+                         for fi in range(MC['SIZE'])]
 
         self.__genererate_noise()
         self.__set_fields_neighbours()
@@ -39,16 +39,16 @@ class Map:
         todo
         :return:
         """
-        fields_no = MC['size'] ** 2
+        fields_no = MC['SIZE'] ** 2
         amount_of_noise = 0
 
         # legacy ctx -> self.__context (to discuss)
         seed(self.__context.id)
 
-        while (amount_of_noise / fields_no) < MC['initialRatio']:
-            x = randint(0, MC['size'] - 1)
-            y = randint(0, MC['size'] - 1)
-            if self.__fields[x][y].value == FC['default_value']:
+        while (amount_of_noise / fields_no) < MC['INITIAL_RATIO']:
+            x = randint(0, MC['SIZE'] - 1)
+            y = randint(0, MC['SIZE'] - 1)
+            if self.__fields[x][y].value == FC['DEFAULT_VALUE']:
                 self.__fields[x][y].value = 1
                 amount_of_noise += 1
 
@@ -60,16 +60,16 @@ class Map:
         """
     #maybe better on the field side to store references to the neighbours instead of just the positions, then we could've just update them locally from the field itself (clearer the code would be)
         x, y = position_tuple
-        mns = FC['mooreNeighbourhoodSize']
+        mns = FC['MOORE_NEIGHBOURHOOD_SIZE']
         
-        corner = [[FC['default_value']] * mns] * mns
+        corner = [[FC['DEFAULT_VALUE']] * mns] * mns
         left_fields = corner + self.__eastbound + corner
         mid_fields = self.__northbound + [[f.value for f in frow] for frow in self.__fields] + self.__southbound
         right_fields = corner + self.__westbound + corner
         all_fields = [i+j+g for i, j, g in zip(left_fields, mid_fields, right_fields)]
 
         # todo lambda should be unnamed function
-        is_in_range = lambda x, y: 0 <= x < MC['size'] and 0 <= y < MC['size']
+        is_in_range = lambda x, y: 0 <= x < MC['SIZE'] and 0 <= y < MC['SIZE']
 
         neighbours_values = [[all_fields[i+x][j+y]
                               for j in range(0, 2*mns+1)]
@@ -119,7 +119,7 @@ class Map:
         todo
         :return:
         """
-        for i in range(MC['numberOfIterations']):
+        for i in range(MC['NUMBER_OF_ITERATIONS']):
             for row in self.__fields:
                 for f in row:
                     f.calculate()
@@ -141,7 +141,7 @@ class Map:
         """
         for row in self.__fields:
             for f in row: 
-                if f.value == 0 and f.groupId == GC['noGroupId']:
+                if f.value == 0 and f.groupId == GC['NO_GROUP_ID']:
                     new_group = Group(f)
                     new_group.find_rest_of_the_fields(self.__fields)
                     self.__groups.append(new_group)

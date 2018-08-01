@@ -34,7 +34,7 @@ class Group:
             for npos in fields[x][y].neighbours_positions:
                 if npos:
                     nx, ny = npos
-                    if fields[nx][ny].value == 0 and fields[nx][ny].group_id == GROUP_CONSTANTS['noGroupId']: #fixed field value condition
+                    if fields[nx][ny].value == 0 and fields[nx][ny].group_id == GROUP_CONSTANTS['NO_GROUP_ID']: #fixed field value condition
                         queue.append((nx, ny))
     
     def update_the_boarders(self):
@@ -49,7 +49,7 @@ class Group:
         todo
         :return:
         """
-        return len([pos for pos in self.__boarders if (MAP_CONSTANTS['size'] - 1 in pos)]) > 0
+        return len([pos for pos in self.__boarders if (MAP_CONSTANTS['SIZE'] - 1 in pos)]) > 0
     
     def __get_path(self, p_a, p_b):
         """
@@ -95,7 +95,7 @@ class Group:
                 if npos:
                     nx, ny = npos
                     if not fields[nx][ny].groupId == self.id or (fields[nx][ny].value == 0
-                                                                 and (not (MAP_CONSTANTS['size'] - 1 in fields[nx][ny].position))):
+                                                                 and (not (MAP_CONSTANTS['SIZE'] - 1 in fields[nx][ny].position))):
                         return counter, fields[nx][ny].group_id, (nx, ny) # todo discuss if proper: legacy x, y -> tuple ??
                     # todo : hardcoded, fixed constant in condition #and wishful mechanism of "_" that matches with everything
                     elif fields[nx][ny].value == 0 and not (nx, ny, _) in queue: # todo :)
@@ -110,7 +110,7 @@ class Group:
         self.update_the_boarders()
         if not self.__has_wayout_already():
             # todo :o hmm?
-            mindist = MAP_CONSTANTS['size'], mingroup_id = self.id, minsource = self.__starting_field_position, minendpoint = self.__starting_field_position
+            mindist = MAP_CONSTANTS['SIZE'], mingroup_id = self.id, minsource = self.__starting_field_position, minendpoint = self.__starting_field_position
             for pos in self.__boarders:
                 distance, group_id, endpoint = self.__closest_group_with_wayout(fields, pos)
                 if distance < mindist:
