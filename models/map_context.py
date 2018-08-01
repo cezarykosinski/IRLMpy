@@ -42,10 +42,10 @@ class MapContext:
         # todo .keys() .get() to vars ?
         # todo Map() not enough params
         if mid_up not in self.maps.keys():
-            self.maps.update({mid_up: m.Map((mid_up, self, self.maps.get(current_id).getSouthBound))})
+            self.maps.update({mid_up: m.Map((mid_up, self, self.maps.get(current_id).get_south_bound))})
         if mid_down not in self.maps.keys():
-            self.maps.update({mid_down: m.Map((mid_down, self, self.maps.get(current_id).getNorthBound))})
+            self.maps.update({mid_down: m.Map((mid_down, self, self.maps.get(current_id).get_north_bound))})
         if mid_left not in self.maps.keys():
-            self.maps.update({mid_left: m.Map((mid_left, self, self.maps.get(current_id).getEastBound))})
+            self.maps.update({mid_left: m.Map((mid_left, self, self.maps.get(current_id).get_east_bound))})
         if mid_right not in self.maps.keys():
-            self.maps.update({mid_right: m.Map((mid_right, self, self.maps.get(current_id).getWestBound))})
+            self.maps.update({mid_right: m.Map((mid_right, self, self.maps.get(current_id).get_west_bound))})
