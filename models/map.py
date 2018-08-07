@@ -131,7 +131,7 @@ class Map:
         :return:
         """
         raise NotImplementedError()
-        self.is_accessed = true
+        self.is_accessed = True
         self.groups_wayouts_providing()
 
     def group_fields(self):
