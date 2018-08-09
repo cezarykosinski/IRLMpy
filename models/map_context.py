@@ -38,14 +38,14 @@ class MapContext:
         """
         current_id = self.current_map.id
         mid_up, mid_down, mid_left, mid_right = [(current_id[0] + x, current_id[1] + y) for x, y in [(0, 1), (0, -1), (-1, 0), (1, 0)]]
-
-        # todo .keys() .get() to vars ?
+        map_keys = self.maps.keys()
+        # todo .keys()-> done,  .get() to vars ?
         # todo Map() not enough params
-        if mid_up not in self.maps.keys():
+        if mid_up not in map_keys:
             self.maps.update({mid_up: m.Map((mid_up, self, self.maps.get(current_id).get_south_bound))})
-        if mid_down not in self.maps.keys():
+        if mid_down not in map_keys:
             self.maps.update({mid_down: m.Map((mid_down, self, self.maps.get(current_id).get_north_bound))})
-        if mid_left not in self.maps.keys():
+        if mid_left not in map_keys:
             self.maps.update({mid_left: m.Map((mid_left, self, self.maps.get(current_id).get_east_bound))})
-        if mid_right not in self.maps.keys():
+        if mid_right not in map_keys:
             self.maps.update({mid_right: m.Map((mid_right, self, self.maps.get(current_id).get_west_bound))})

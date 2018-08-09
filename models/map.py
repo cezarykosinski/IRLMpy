@@ -10,7 +10,7 @@ class Map:
     """
     todo
     """
-
+    # default bounds to some common consts?
     def __init__(self, id, ctx,
                  northbound=[[FC['DEFAULT_VALUE']] * MC['SIZE']] * FC['MOORE_NEIGHBOURHOOD_SIZE'],
                  westbound=[[FC['DEFAULT_VALUE']] * FC['MOORE_NEIGHBOURHOOD_SIZE']] * MC['SIZE'],
@@ -68,7 +68,6 @@ class Map:
         right_fields = corner + self.__westbound + corner
         all_fields = [i+j+g for i, j, g in zip(left_fields, mid_fields, right_fields)]
 
-        # todo lambda should be unnamed function
         is_in_range = lambda x, y: 0 <= x < MC['SIZE'] and 0 <= y < MC['SIZE']
 
         neighbours_values = [[all_fields[i+x][j+y]
