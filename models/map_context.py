@@ -37,15 +37,34 @@ class MapContext:
         :return:
         """
         current_id = self.current_map.id
-        mid_up, mid_down, mid_left, mid_right = [(current_id[0] + x, current_id[1] + y) for x, y in [(0, 1), (0, -1), (-1, 0), (1, 0)]]
         map_keys = self.maps.keys()
-        # todo .keys()-> done,  .get() to vars ?
-        # todo Map() not enough params
-        if mid_up not in map_keys:
-            self.maps.update({mid_up: m.Map((mid_up, self, self.maps.get(current_id).get_south_bound))})
-        if mid_down not in map_keys:
-            self.maps.update({mid_down: m.Map((mid_down, self, self.maps.get(current_id).get_north_bound))})
-        if mid_left not in map_keys:
-            self.maps.update({mid_left: m.Map((mid_left, self, self.maps.get(current_id).get_east_bound))})
-        if mid_right not in map_keys:
-            self.maps.update({mid_right: m.Map((mid_right, self, self.maps.get(current_id).get_west_bound))})
+        mid_up_left, mid_up, mid_up_right, mid_left, mid_right, mid_down_left, mid_down, mid_down_right = [(current_id[0] + x, current_id[1] + y) for x,y in [(-1, 1), (0, 1), (1,1), (-1, 0), (1, 0), (-1,-1), (0, -1), (1,-1)]]
+
+        if not mid_up_left in map_keys:
+            self.maps.update({mid_up: m.Map((mid_up, self, self.current_map.get_south_east_bound))})
+        if not mid_up in map_keys:
+            self.maps.update({mid_up: m.Map((mid_up, self, self.current_map.get_south_bound))})
+        if not mid_up_right in map_keys:
+            self.maps.update({mid_up: m.Map((mid_up, self, self.current_map.get_south_west_bound))})
+        if not mid_left in map_keys:
+            self.maps.update({mid_left: m.Map((mid_left, self, self.current_map.get_east_bound))})
+        if not mid_right in map_keys:
+            self.maps.update({mid_right: m.Map((mid_right, self, self.current_map.get_west_bound))})
+        if not mid_down_left in map_keys:
+            self.maps.update({mid_up: m.Map((mid_up, self, self.current_map.get_north_east_bound))})
+        if not mid_down in map_keys:
+            self.maps.update({mid_up: m.Map((mid_up, self, self.current_map.get_north_bound))})
+        if not mid_down_right in map_keys:
+            self.maps.update({mid_down: m.Map((mid_down, self, self.current_map.get_north_west_bound))})
+
+    def set_northeastbound(self, pos):
+    def set_northbound(self, pos):
+    def set_northwestbound(self, pos):
+
+    def set_eastbound(self, pos):
+    def set_westbound(self, pos):
+
+    def set_southeastbound(self, pos):
+    def set_southbound(self, pos):
+    def set_southwestbound(self, pos):
+

@@ -10,31 +10,32 @@ class Map:
     """
     todo
     """
-    # default bounds to some common consts?
-    def __init__(self, id, ctx,
-                 northbound=[[FC['DEFAULT_VALUE']] * MC['SIZE']] * FC['MOORE_NEIGHBOURHOOD_SIZE'],
-                 westbound=[[FC['DEFAULT_VALUE']] * FC['MOORE_NEIGHBOURHOOD_SIZE']] * MC['SIZE'],
-                 southbound=[[FC['DEFAULT_VALUE']] * MC['SIZE']] * FC['MOORE_NEIGHBOURHOOD_SIZE'],
-                 eastbound=[[FC['DEFAULT_VALUE']] * FC['MOORE_NEIGHBOURHOOD_SIZE']] * MC['SIZE']):
+    def __init__(self, id, ctx):
         self.id = id
         self.__context = ctx
 
-        self.__northbound = northbound
-        self.__westbound = westbound
-        self.__southbound = southbound
-        self.__eastbound = eastbound
+        self.__northeastbound = ctx.set_northeast_bound(id)
+        self.__northbound = ctx.setNorthbound(id)
+        self.__northwestbound = ctx.setNorthwestBound(id)
+        self.__westbound = ctx.setWestbound(id)
+        self.__southwestbound = ctx.setSouthwestBound(id)
+        self.__southbound = ctx.setSouthbound(id)
+        self.__southeastbound = ctx.setSoutheastbound(id)
+        self.__eastbound = ctx.setEastbound(id)
+
 
         self.is_accessed = False
         self.__groups = []
         self.__fields = [[Field(fi, fj) for fj in range(MC['SIZE'])]
                          for fi in range(MC['SIZE'])]
 
-        self.__genererate_noise()
+        self.__generate_noise()
         self.__set_fields_neighbours()
         self.calculate()
         self.group_fields()
 
-    def __genererate_noise(self):
+    #do service'u 
+    def __generate_noise(self):
         """
         todo
         :return:
@@ -42,7 +43,6 @@ class Map:
         fields_no = MC['SIZE'] ** 2
         amount_of_noise = 0
 
-        # legacy ctx -> self.__context (to discuss)
         seed(self.__context.id)
 
         while (amount_of_noise / fields_no) < MC['INITIAL_RATIO']:
@@ -52,66 +52,85 @@ class Map:
                 self.__fields[x][y].value = 1
                 amount_of_noise += 1
 
-    def __get_field_neighbours(self, position_tuple):
+    def __set_fields_neighbours(self):
         """
         todo
-        :param position_tuple:
         :return:
         """
-    #maybe better on the field side to store references to the neighbours instead of just the positions, then we could've just update them locally from the field itself (clearer the code would be)
-        x, y = position_tuple
-        mns = FC['MOORE_NEIGHBOURHOOD_SIZE']
-        
-        corner = [[FC['DEFAULT_VALUE']] * mns] * mns
-        left_fields = corner + self.__eastbound + corner
-        mid_fields = self.__northbound + [[f.value for f in frow] for frow in self.__fields] + self.__southbound
-        right_fields = corner + self.__westbound + corner
-        all_fields = [i+j+g for i, j, g in zip(left_fields, mid_fields, right_fields)]
+        left_fields = self.__northeastbound + self.__eastbound + self.southeastbound
+        mid_fields = self.__northbound + self.__fields + self.__southbound
+        right_fields = self.__northwestbound + self.__westbound + self.southwestbound
+        all_fields = [i+j+g for i,j,g in zip(left_fields, mid_fields, right_fields)]
 
-        is_in_range = lambda x, y: 0 <= x < MC['SIZE'] and 0 <= y < MC['SIZE']
+        for row in self.__fields:
+            for f in row:
+                f.set_neighbours(all_fields)
 
-        neighbours_values = [[all_fields[i+x][j+y]
-                              for j in range(0, 2*mns+1)]
-                             for i in range(0, 2*mns+1)]
-        neighbours_positions = [self.__fields[i+x][j+y].position
-                                if is_in_range(i+x, j+y)
-                                else None 
-                                for j in range(-mns, mns+1)
-                                for i in range(-mns, mns+1)]
-        return neighbours_values, neighbours_positions
-    
-    def __set_fields_neighbours(self):
+    def __set_fields_neighbours_values(self):
         """
         todo
         :return:
         """
         for row in self.__fields:
             for f in row:
-                f.neighbours_values, f.neighbours_positions = self.__get_field_neighbours(f.position)
+                f.set_neighbours_values()
+
+
+    def get_northeast_bound(self):
+        """
+        todo
+        :return:
+        """
+        return [row[(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1):] for row in self.__fields[:FC['MOORE_NEIGHBOURHOOD_SIZE']]]
 
     def get_north_bound(self):
         """
         todo
         :return:
         """
-        
-    def get_south_bound(self):
+        return self.__fields[:FC['MOORE_NEIGHBOURHOOD_SIZE']]
+
+    def get_northwest_bound(self):
         """
         todo
         :return:
         """
-    
-    def get_east_bound(self):
-        """
-        todo
-        :return:
-        """
-    
+        return [row[:FC['MOORE_NEIGHBOURHOOD_SIZE']] for row in self.__fields[:FC['MOORE_NEIGHBOURHOOD_SIZE']]]
+
     def get_west_bound(self):
         """
         todo
         :return:
         """
+        return [row[:FC['MOORE_NEIGHBOURHOOD_SIZE']] for row in self.__fields]
+    
+    def get_southwest_bound(self):
+        """
+        todo
+        :return:
+        """
+        return [row[:FC['MOORE_NEIGHBOURHOOD_SIZE']] for row in self.__fields[(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1):]]
+
+    def get_south_bound(self):
+        """
+        todo
+        :return:
+        """
+        return self.__fields[(FC['MOORE_NEIGHBOURHOOD_SIZE']+1):]
+
+    def get_southeast_bound(self):
+        """
+        todo
+        :return:
+        """
+        return [row[FC['MOORE_NEIGHBOURHOOD_SIZE']:] for row in self.__fields[FC['MOORE_NEIGHBOURHOOD_SIZE']:]]
+
+    def get_east_bound(self):
+        """
+        todo
+        :return:
+        """
+        return [row[FC['MOORE_NEIGHBOURHOOD_SIZE']:] for row in self.__fields]
 
     def calculate(self):
         """
@@ -122,7 +141,7 @@ class Map:
             for row in self.__fields:
                 for f in row:
                     f.calculate()
-            self.__set_fields_neighbours()
+            self.__set_fields_neighbours_values()
 
     def access(self): #direction?
         """

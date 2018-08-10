@@ -12,7 +12,18 @@ class Field:
         self.value = FC['DEFAULT_VALUE']
         self.groupId = GC['NO_GROUP_ID']
         self.neighbours_values = []
-        self.neighbours_positions = []
+        self.neighbours = []
+
+    def set_neighbours(self, fields):
+        mns = FC['MOORE_NEIGHBOURHOOD_SIZE']
+        x, y = [i + mns for i in self.position]
+
+        self.neighbours = [fields[x+i][y+j]
+                            for j in range(-mns, mns+1)
+                            for i in range(-mns, mns+1)]
+
+    def set_neighbours_values(self):
+        self.neighbours_values = [n.value for n in self.neighbours]
 
     def calculate(self):
         """
@@ -25,7 +36,7 @@ class Field:
 
         result = sum(waged_neighbours_values) / num_of_considered_neighbours
 
-        self.value = 1 if result > FC['CONDITION'] else 0 #NOT GENERIC
+        self.value = FC['ROCK'] if result > FC['CONDITION'] else FC['FLOOR'] #NOT GENERIC
 
     def display(self):
         """

@@ -34,7 +34,7 @@ class Group:
         todo
         :return:
         """
-        self.__boarders = [f.position for f in self.__fields if 1 in f.neighboursValues]
+        self.__boarders = [f.position for f in self.__fields if FC['ROCK'] in f.neighboursValues]
 
     def __has_wayout_already(self):
         """
@@ -51,11 +51,12 @@ class Group:
         """
         self.update_the_boarders()
         if not self.__has_wayout_already():
-            # todo :o hmm? to discuss map size == self.id? Do we need ; instead , ?
-            mindist = MAP_CONSTANTS['SIZE'], mingroup_id = self.id, minsource = self.__starting_field_position, minendpoint = self.__starting_field_position
+            mindist = MAP_CONSTANTS['SIZE'] 
+            mingroup_id = self.id
+            minsource = self.__starting_field_position
+            minendpoint = self.__starting_field_position
             for pos in self.__boarders:
-                distance, group_id, endpoint = GroupService.closest_group_with_wayout(fields, pos)
+                distance, group_id, endpoint = GroupService.closest_group_with_wayout(self.id, fields, pos)
                 if distance < mindist:
-                    # todo :o hmm?
-                    mindist = distance, mingroup_id = group_id, minsource = f, minendpoint = endpoint
+                    mindist, mingroup_id, minsource, minendpoint = distance, group_id, f, endpoint
             GroupService.drill_wayout(fields, minsource, minendpoint)
