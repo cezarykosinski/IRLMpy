@@ -15,7 +15,7 @@ class Group:
         :param starting_field:
         """
         self.id = Group.LASTEST_ID
-        self.__starting_field_position = starting_field.position
+        self.starting_field_position = starting_field.position
         self.__boarders = []
         self.__fields = []
         Group.LASTEST_ID += 1
@@ -26,7 +26,7 @@ class Group:
         :param fields:
         :return:
         """
-        queue = [self.__starting_field_position]
+        queue = [self.starting_field_position]
         self.__fields.append(GroupService.assign_group_to_fields(self.id, queue, fields))
 
     def update_the_boarders(self):
@@ -53,8 +53,8 @@ class Group:
         if not self.__has_wayout_already():
             mindist = MAP_CONSTANTS['SIZE'] 
             mingroup_id = self.id
-            minsource = self.__starting_field_position
-            minendpoint = self.__starting_field_position
+            minsource = self.starting_field_position
+            minendpoint = self.starting_field_position
             for pos in self.__boarders:
                 distance, group_id, endpoint = GroupService.closest_group_with_wayout(self.id, fields, pos)
                 if distance < mindist:

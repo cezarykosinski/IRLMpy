@@ -40,9 +40,10 @@ class Field:
 
     def move(self, rogue_data):
         if self.value == FC['ROCK']:
-            return None #lame... maybe something else?
+            return None 
+            #lame... maybe something else to return?
         else:
-            field_info = #to precise
+            field_info = {'visible_surrounding': self.get_surrounding(rogue_data[''])}
             return field_info
 
     def display(self):

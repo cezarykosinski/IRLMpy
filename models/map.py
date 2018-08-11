@@ -133,6 +133,9 @@ class Map:
         """
         return [row[FC['MOORE_NEIGHBOURHOOD_SIZE']:] for row in self.__fields]
 
+    def get_starting_field(self):
+        return self.__groups[0].starting_field_position
+
     def calculate(self):
         """
         todo
@@ -173,24 +176,18 @@ class Map:
         self.is_accessed = True
         self.groups_wayouts_providing()
 
-#    def place_rogue(self, rogue_data, starting_position=None):
-#        if not starting_position:
-#            #pick random group, take a starting_field, return field_info, as if accessed after make_move method
-#        else:
-#            return self.make_move((rogue_data, starting_))
-
     def make_move(self, rogue_resp):
         rogue_data, rogue_move = rogue_resp
-        new_pos = (rogue_data.position[0] + rogue_move[0], rogue_data.position[1] + rogue_move[1])
+        new_pos = (rogue_data['position'][0] + rogue_move[0], rogue_data['position'][1] + rogue_move[1])
         if MC['SIZE']-1 not in new_pos:
             field_info = self.__fields[new_pos[0]][new_pos[0]].move(rogue_data)
             if field_info:
                 return field_info
             else 
-                return self.__fields[rogue_data.position[0]][rogue_data.position[1]].move(rogue_data)
+                return self.__fields[rogue_data['position'][0]][rogue_data['position'][1]].move(rogue_data)
         else:
-            
-            
+            #return that we crossed some border
+            #shouldn't we react to field from the map's neighbour being included in visible_surrounding ??
 
     def display(self):
         """

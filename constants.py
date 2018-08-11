@@ -26,6 +26,6 @@ MAP_CONTEXT_CONSTANTS = {
     }
 
 ROGUE_CONSTANTS = {
-    'TORCH_SIZE': 5,
-    'TORCH_TIME': 100
+    'MAX_TORCH_SIZE': 5,
+    'TORCH_BURN_TIME': 25
     }

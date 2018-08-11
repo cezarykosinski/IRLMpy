@@ -32,7 +32,9 @@ class MapContext:
         """
         self.maps.update({(0, 0): m.Map((0, 0), self)})
         self.access_map((0, 0))
-        map_response = self.current_map.place_rogue(rogue.torch_size)
+        rogue_data = rogue.get_data()
+        map_response = self.current_map.make_move((rogue_data, self.current_map.get_starting_field))
+        #map_response = self.current_map.place_rogue()
         while rogue.torch_size:
             rogue_response = self.rogue.make_move(map_response)
             map_response = self.current_map.make_move(rogue_response)
