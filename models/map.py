@@ -1,6 +1,7 @@
 from random import seed, randint
 from models.field import Field
 from models.group import Group
+from models.map_context import MapContext.get_*
 from constants import FIELD_CONSTANTS as FC
 from constants import GROUP_CONSTANTS as GC
 from constants import MAP_CONSTANTS as MC
@@ -15,13 +16,13 @@ class Map:
         self.__context = ctx
 
         self.__northeastbound = ctx.set_northeast_bound(id)
-        self.__northbound = ctx.setNorthbound(id)
-        self.__northwestbound = ctx.setNorthwestBound(id)
-        self.__westbound = ctx.setWestbound(id)
-        self.__southwestbound = ctx.setSouthwestBound(id)
-        self.__southbound = ctx.setSouthbound(id)
-        self.__southeastbound = ctx.setSoutheastbound(id)
-        self.__eastbound = ctx.setEastbound(id)
+        self.__northbound = ctx.set_northbound(id)
+        self.__northwestbound = ctx.set_northwest_bound(id)
+        self.__westbound = ctx.set_westbound(id)
+        self.__southwestbound = ctx.set_southwest_bound(id)
+        self.__southbound = ctx.set_southbound(id)
+        self.__southeastbound = ctx.set_southeastbound(id)
+        self.__eastbound = ctx.set_eastbound(id)
 
 
         self.is_accessed = False
@@ -81,7 +82,7 @@ class Map:
         todo
         :return:
         """
-        return [row[(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1):] for row in self.__fields[:FC['MOORE_NEIGHBOURHOOD_SIZE']]]
+        return [row[(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 0):] for row in self.__fields[:FC['MOORE_NEIGHBOURHOOD_SIZE']]]
 
     def get_north_bound(self):
         """
@@ -143,15 +144,6 @@ class Map:
                     f.calculate()
             self.__set_fields_neighbours_values()
 
-    def access(self): #direction?
-        """
-        todo
-        :return:
-        """
-        raise NotImplementedError()
-        self.is_accessed = True
-        self.groups_wayouts_providing()
-
     def group_fields(self):
         """
         todo
@@ -159,7 +151,7 @@ class Map:
         """
         for row in self.__fields:
             for f in row: 
-                if f.value == 0 and f.groupId == GC['NO_GROUP_ID']:
+                if f.value == 0 and f.group_id == GC['NO_GROUP_ID']:
                     new_group = Group(f)
                     new_group.find_rest_of_the_fields(self.__fields)
                     self.__groups.append(new_group)
@@ -171,6 +163,34 @@ class Map:
         """
         for g in self.__groups:
             g.wayout_providing(self.__fields)
+
+    def access(self): #direction?
+        """
+        todo
+        :return:
+        """
+        raise not_implemented_error()
+        self.is_accessed = True
+        self.groups_wayouts_providing()
+
+#    def place_rogue(self, rogue_data, starting_position=None):
+#        if not starting_position:
+#            #pick random group, take a starting_field, return field_info, as if accessed after make_move method
+#        else:
+#            return self.make_move((rogue_data, starting_))
+
+    def make_move(self, rogue_resp):
+        rogue_data, rogue_move = rogue_resp
+        new_pos = (rogue_data.position[0] + rogue_move[0], rogue_data.position[1] + rogue_move[1])
+        if MC['SIZE']-1 not in new_pos:
+            field_info = self.__fields[new_pos[0]][new_pos[0]].move(rogue_data)
+            if field_info:
+                return field_info
+            else 
+                return self.__fields[rogue_data.position[0]][rogue_data.position[1]].move(rogue_data)
+        else:
+            
+            
 
     def display(self):
         """

@@ -38,6 +38,13 @@ class Field:
 
         self.value = FC['ROCK'] if result > FC['CONDITION'] else FC['FLOOR'] #NOT GENERIC
 
+    def move(self, rogue_data):
+        if self.value == FC['ROCK']:
+            return None #lame... maybe something else?
+        else:
+            field_info = #to precise
+            return field_info
+
     def display(self):
         """
         todo
