@@ -1,12 +1,12 @@
 from models import map as m
-from constants import MAP_CONTEXT_CONSTANTS as MCC
-from constants import ROGUE_CONSTANTS as RC
+from constants import MAP_CONTEXT_CONSTANTS as MCC,  ROGUE_CONSTANTS as RC
+
 
 class MapContext:
     """
     todo
     """
-    def __init__(self, id=0, rogue):
+    def __init__(self, id=0, rogue=None):
         """
         todo
         :param id:
@@ -23,7 +23,6 @@ class MapContext:
         """
         self.maps.update({(0, 0): m.Map((0, 0), self)})
         map_response = self.access_map((0, 0))
-        
 
     def start_with_rogue(self, rogue):
         """
@@ -99,7 +98,6 @@ class MapContext:
             bound = MCC['DEFAULT_CORNER_BOUND']
         return bound    
 
-
     def get_east_bound(self, pos):
         new_pos = pos[0], pos[1] + 1
         if new_pos in self.maps.keys():
@@ -107,6 +105,7 @@ class MapContext:
         else:
             bound = MCC['DEFAULT_VERTICAL_BOUND']
         return bound    
+
     def get_west_bound(self, pos):
         new_pos = pos[0], pos[1] - 1
         if new_pos in self.maps.keys():
@@ -114,7 +113,6 @@ class MapContext:
         else:
             bound = MCC['DEFAULT_VERTICAL_BOUND']
         return bound    
-
 
     def get_southeast_bound(self, pos):
         new_pos = pos[0] - 1, pos[1] + 1

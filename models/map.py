@@ -1,7 +1,7 @@
 from random import seed, randint
 from models.field import Field
 from models.group import Group
-from models.map_context import MapContext.get_*
+# from models.map_context import MapContext.get_*
 from constants import FIELD_CONSTANTS as FC
 from constants import GROUP_CONSTANTS as GC
 from constants import MAP_CONSTANTS as MC
@@ -23,7 +23,6 @@ class Map:
         self.__southbound = ctx.set_southbound(id)
         self.__southeastbound = ctx.set_southeastbound(id)
         self.__eastbound = ctx.set_eastbound(id)
-
 
         self.is_accessed = False
         self.__groups = []
@@ -58,10 +57,10 @@ class Map:
         todo
         :return:
         """
-        left_fields = self.__northeastbound + self.__eastbound + self.southeastbound
+        left_fields = self.__northeastbound + self.__eastbound + self.__southeastbound
         mid_fields = self.__northbound + self.__fields + self.__southbound
-        right_fields = self.__northwestbound + self.__westbound + self.southwestbound
-        all_fields = [i+j+g for i,j,g in zip(left_fields, mid_fields, right_fields)]
+        right_fields = self.__northwestbound + self.__westbound + self.__southwestbound
+        all_fields = [i+j+g for i, j, g in zip(left_fields, mid_fields, right_fields)]
 
         for row in self.__fields:
             for f in row:
@@ -75,7 +74,6 @@ class Map:
         for row in self.__fields:
             for f in row:
                 f.set_neighbours_values()
-
 
     def get_northeast_bound(self):
         """
@@ -165,14 +163,14 @@ class Map:
         :return:
         """
         for g in self.__groups:
-            g.wayout_providing(self.__fields)
+            g.group_connecting(self.__fields)
 
     def access(self): #direction?
         """
         todo
         :return:
         """
-        raise not_implemented_error()
+        raise NotImplementedError
         self.is_accessed = True
         self.groups_wayouts_providing()
 
@@ -183,9 +181,10 @@ class Map:
             field_info = self.__fields[new_pos[0]][new_pos[0]].move(rogue_data)
             if field_info:
                 return field_info
-            else 
+            else:
                 return self.__fields[rogue_data['position'][0]][rogue_data['position'][1]].move(rogue_data)
         else:
+            pass
             #return that we crossed some border
             #shouldn't we react to field from the map's neighbour being included in visible_surrounding ??
 
@@ -210,4 +209,3 @@ class Map:
             for f in row: 
                 row_display += f.display_group()
             print(row_display)
-

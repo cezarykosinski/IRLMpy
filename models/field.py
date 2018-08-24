@@ -5,12 +5,13 @@ from constants import FIELD_CONSTANTS as FC
 
 class Field:
     """
-    todo
+    Elementary object
+
     """
     def __init__(self, x, y):
         self.position = x, y
         self.value = FC['DEFAULT_VALUE']
-        self.groupId = GC['NO_GROUP_ID']
+        self.group_id = GC['NO_GROUP_ID']
         self.neighbours_values = []
         self.neighbours = []
 
@@ -19,8 +20,8 @@ class Field:
         x, y = [i + mns for i in self.position]
 
         self.neighbours = [fields[x+i][y+j]
-                            for j in range(-mns, mns+1)
-                            for i in range(-mns, mns+1)]
+                           for j in range(-mns, mns+1)
+                           for i in range(-mns, mns+1)]
 
     def set_neighbours_values(self):
         self.neighbours_values = [n.value for n in self.neighbours]
@@ -58,4 +59,4 @@ class Field:
         todo
         :return:
         """
-        return [str(self.groupId), "#"][self.value] + " "
+        return [str(self.group_id), "#"][self.value] + " "
