@@ -1,7 +1,9 @@
 from random import seed, randint
+from collections import defaultdict
+
 from models.field import Field
 from models.group import Group
-# from models.map_context import MapContext.get_*
+
 from constants import FIELD_CONSTANTS as FC
 from constants import GROUP_CONSTANTS as GC
 from constants import MAP_CONSTANTS as MC
@@ -13,29 +15,32 @@ class Map:
     """
     def __init__(self, id, ctx):
         self.id = id
-        self.__context = ctx
-
-        self.__northeastbound = ctx.set_northeast_bound(id)
-        self.__northbound = ctx.set_northbound(id)
-        self.__northwestbound = ctx.set_northwest_bound(id)
-        self.__westbound = ctx.set_westbound(id)
-        self.__southwestbound = ctx.set_southwest_bound(id)
-        self.__southbound = ctx.set_southbound(id)
-        self.__southeastbound = ctx.set_southeastbound(id)
-        self.__eastbound = ctx.set_eastbound(id)
+        self._context = ctx
 
         self.is_accessed = False
-        self.__groups = []
-        self.__fields = [[Field(fi, fj) for fj in range(MC['SIZE'])]
-                         for fi in range(MC['SIZE'])]
+        self._groups = defaultdict(lambda: None)
+        self._fields = [[Field(fi, fj) 
+                        for fj in range(MC['SIZE'])]
+                        for fi in range(MC['SIZE'])]
 
-        self.__generate_noise()
-        self.__set_fields_neighbours()
+        self._generate_noise()
+
+    def start(self):
+        self._northeastbound = self._context.get_northeast_bound(self.id)
+        self._northbound = self._context.get_north_bound(self.id)
+        self._northwestbound = self._context.get_northwest_bound(self.id)
+        self._westbound = self._context.get_west_bound(self.id)
+        self._southwestbound = self._context.get_southwest_bound(self.id)
+        self._southbound = self._context.get_south_bound(self.id)
+        self._southeastbound = self._context.get_southeast_bound(self.id)
+        self._eastbound = self._context.get_east_bound(self.id)
+
+        self._set_fields_neighbours()
         self.calculate()
         self.group_fields()
 
     #do service'u 
-    def __generate_noise(self):
+    def _generate_noise(self):
         """
         todo
         :return:
@@ -43,35 +48,35 @@ class Map:
         fields_no = MC['SIZE'] ** 2
         amount_of_noise = 0
 
-        seed(self.__context.id)
+        seed(self._context.id)
 
         while (amount_of_noise / fields_no) < MC['INITIAL_RATIO']:
             x = randint(0, MC['SIZE'] - 1)
             y = randint(0, MC['SIZE'] - 1)
-            if self.__fields[x][y].value == FC['DEFAULT_VALUE']:
-                self.__fields[x][y].value = 1
+            if self._fields[x][y].value == FC['DEFAULT_VALUE']:
+                self._fields[x][y].value = 1
                 amount_of_noise += 1
 
-    def __set_fields_neighbours(self):
+    def _set_fields_neighbours(self):
         """
         todo
         :return:
         """
-        left_fields = self.__northeastbound + self.__eastbound + self.__southeastbound
-        mid_fields = self.__northbound + self.__fields + self.__southbound
-        right_fields = self.__northwestbound + self.__westbound + self.__southwestbound
+        left_fields = self._northeastbound + self._eastbound + self._southeastbound
+        mid_fields = self._northbound + self._fields + self._southbound
+        right_fields = self._northwestbound + self._westbound + self._southwestbound
         all_fields = [i+j+g for i, j, g in zip(left_fields, mid_fields, right_fields)]
 
-        for row in self.__fields:
+        for row in self._fields:
             for f in row:
                 f.set_neighbours(all_fields)
 
-    def __set_fields_neighbours_values(self):
+    def _set_fields_neighbours_values(self):
         """
         todo
         :return:
         """
-        for row in self.__fields:
+        for row in self._fields:
             for f in row:
                 f.set_neighbours_values()
 
@@ -80,59 +85,59 @@ class Map:
         todo
         :return:
         """
-        return [row[(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 0):] for row in self.__fields[:FC['MOORE_NEIGHBOURHOOD_SIZE']]]
+        return [row[(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1):] for row in self._fields[:(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1)]]
 
     def get_north_bound(self):
         """
         todo
         :return:
         """
-        return self.__fields[:FC['MOORE_NEIGHBOURHOOD_SIZE']]
+        return self._fields[:(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1)]
 
     def get_northwest_bound(self):
         """
         todo
         :return:
         """
-        return [row[:FC['MOORE_NEIGHBOURHOOD_SIZE']] for row in self.__fields[:FC['MOORE_NEIGHBOURHOOD_SIZE']]]
+        return [row[:(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1)] for row in self._fields[:(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1)]]
 
     def get_west_bound(self):
         """
         todo
         :return:
         """
-        return [row[:FC['MOORE_NEIGHBOURHOOD_SIZE']] for row in self.__fields]
+        return [row[:(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1)] for row in self._fields]
     
     def get_southwest_bound(self):
         """
         todo
         :return:
         """
-        return [row[:FC['MOORE_NEIGHBOURHOOD_SIZE']] for row in self.__fields[(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1):]]
+        return [row[:(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1)] for row in self._fields[((FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1) + 1):]]
 
     def get_south_bound(self):
         """
         todo
         :return:
         """
-        return self.__fields[(FC['MOORE_NEIGHBOURHOOD_SIZE']+1):]
+        return self._fields[((FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1)+1):]
 
     def get_southeast_bound(self):
         """
         todo
         :return:
         """
-        return [row[FC['MOORE_NEIGHBOURHOOD_SIZE']:] for row in self.__fields[FC['MOORE_NEIGHBOURHOOD_SIZE']:]]
+        return [row[(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1):] for row in self._fields[(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1):]]
 
     def get_east_bound(self):
         """
         todo
         :return:
         """
-        return [row[FC['MOORE_NEIGHBOURHOOD_SIZE']:] for row in self.__fields]
+        return [row[(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1):] for row in self._fields]
 
     def get_starting_field(self):
-        return self.__groups[0].starting_field_position
+        return self._groups[0].starting_field_position
 
     def calculate(self):
         """
@@ -140,30 +145,36 @@ class Map:
         :return:
         """
         for i in range(MC['NUMBER_OF_ITERATIONS']):
-            for row in self.__fields:
+            self._set_fields_neighbours_values()
+            for row in self._fields:
                 for f in row:
                     f.calculate()
-            self.__set_fields_neighbours_values()
 
     def group_fields(self):
         """
         todo
         :return:
         """
-        for row in self.__fields:
+        for row in self._fields:
             for f in row: 
-                if f.value == 0 and f.group_id == GC['NO_GROUP_ID']:
+                if f.value == FC['FLOOR'] and f.group_id == GC['NO_GROUP_ID']:
                     new_group = Group(f)
-                    new_group.find_rest_of_the_fields(self.__fields)
-                    self.__groups.append(new_group)
+                    new_group.find_rest_of_the_fields(self._fields)
+                    self._groups.update({new_group.id: new_group})
 
-    def groups_wayouts_providing(self):
+    def groups_connecting(self):
         """
         todo
         :return:
         """
-        for g in self.__groups:
-            g.group_connecting(self.__fields)
+        for g in self._groups.keys():
+            group = self._groups[g]
+            if group:
+                id_a, id_b  = group.group_connecting(self._fields)
+                if id_a != id_b:
+                    group.assign_new_fields(self._groups[id_b]._fields)
+                    del self._groups[id_b]
+
 
     def access(self): #direction?
         """
@@ -172,17 +183,20 @@ class Map:
         """
         raise NotImplementedError
         self.is_accessed = True
-        self.groups_wayouts_providing()
+        self.groups_connecting()
 
-    def make_move(self, rogue_resp):
-        rogue_data, rogue_move = rogue_resp
-        new_pos = (rogue_data['position'][0] + rogue_move[0], rogue_data['position'][1] + rogue_move[1])
-        if MC['SIZE']-1 not in new_pos:
-            field_info = self.__fields[new_pos[0]][new_pos[0]].move(rogue_data)
-            if field_info:
-                return field_info
-            else:
-                return self.__fields[rogue_data['position'][0]][rogue_data['position'][1]].move(rogue_data)
+    def make_move(self, rogue_data):
+        position = rogue_data['position']
+        move = rogue_data['move']
+        torch_size = rogue_data['torch_size']
+        new_pos = (position[0] + move[0], position[1] + move[1])
+        if MC['SIZE'] - torch_size not in new_pos and torch_size - 1 not in new_pos:
+           [f.values]
+           # field_info = self._fields[new_pos[0]][new_pos[1]].move(rogue_data)
+           # if field_info:
+           #     return field_info
+           # else: 
+           #     return self._fields[position[0]][position[1]].move(rogue_data)
         else:
             pass
             #return that we crossed some border
@@ -193,7 +207,7 @@ class Map:
         todo
         :return:
         """
-        for row in self.__fields:
+        for row in self._fields:
             row_display = ""
             for f in row: 
                 row_display += f.display()
@@ -204,7 +218,7 @@ class Map:
         todo
         :return:
         """
-        for row in self.__fields:
+        for row in self._fields:
             row_display = ""
             for f in row: 
                 row_display += f.display_group()

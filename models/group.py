@@ -23,14 +23,13 @@ class Group:
         self._fields = []
         Group.LASTEST_ID += 1
     
-    def find_rest_of_the_fields(self, field):
+    def find_rest_of_the_fields(self, fields):
         """
         todo
         :param fields:
         :return:
         """
-        queue = [self.starting_field_position]
-        self._fields.append(GroupService.assign_group_to_fields(self.id, queue, field))
+        self._fields = GroupService.assign_group_to_fields(self.id, self.starting_field_position, fields)
 
     def update_the_boarders(self):
         """
@@ -39,7 +38,7 @@ class Group:
         """
         self._boarder = [f.position for f in self._fields if FC['ROCK'] in f.neighboursValues]
 
-    def __has_wayout_already(self):
+    def has_wayout_already(self):
         """
         todo
         :return:
@@ -48,10 +47,12 @@ class Group:
 
     def assign_new_fields(self, positions, fields):
         self._fields.extend(positions)
-        self._boarder.extend(positions)
-        for position in positions:
-            x, y = position
+        for pos in positions:
+            x, y = pos
+            if FC['ROCK'] in [n.value for n in fields[x][y].neighbours]:
+                self._boarders.insert(0, pos)
             fields[x][y].group_id = self.id
+
 
     def group_connecting(self, fields):
         """
@@ -59,37 +60,19 @@ class Group:
         :param fields:
         :return:
         """
-        min_path = MC['SIZE']**2
+        min_path_len = MC['SIZE']**2
         min_points_pair = None
+        dest_group_id = self.id  
         borders_last_index = len(self._boarder) - 1
         n_samples = math.ceil(GC['EXITS_RATIO'] * borders_last_index)
         exits_indexes = random.sample(range(borders_last_index), n_samples)
         for exit_point in [self._boarder[index] for index in exits_indexes]:
-            points_pair, min_path = GroupService.find_closest_group(exit_point, fields, min_path)
+            points_pair, min_path_len, path = GroupService.find_path_to_closest_group(exit_point, fields, min_path_len)
             min_points_pair = points_pair or min_points_pair
+            min_path = path or min_path
         if min_points_pair:
-            path = GroupService.find_path(min_points_pair, fields)
-            GroupService.drill_path(path, fields)
-            self.assign_new_fields(path, fields)
-
-            
-            
-            
-
-
-
-
-
-
-
-        # self.update_the_boarders()
-        # if not self.__has_wayout_already():
-        #     mindist = MC['SIZE']
-        #     mingroup_id = self.id
-        #     minsource = self.starting_field_position
-        #     minendpoint = self.starting_field_position
-        #     for pos in self._boarder:
-        #         distance, group_id, endpoint = GroupService.closest_group_with_wayout(self.id, fields, pos)
-        #         if distance < mindist:
-        #             mindist, mingroup_id, minsource, minendpoint = distance, group_id, f, endpoint
-        #     GroupService.drill_wayout(fields, minsource, minendpoint)
+            GroupService.drill_path(min_path, fields)
+            self.assign_new_fields(min_path, fields)
+            dx, dy = min_points_pair[1]
+            dest_group_id = fields[dx][dy].group_id
+        return self.id, dest_group_id

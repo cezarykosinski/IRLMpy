@@ -1,4 +1,3 @@
-from service.field import FieldService
 from constants import GROUP_CONSTANTS as GC
 from constants import FIELD_CONSTANTS as FC
 
@@ -16,6 +15,7 @@ class Field:
         self.neighbours = []
 
     def set_neighbours(self, fields):
+        
         mns = FC['MOORE_NEIGHBOURHOOD_SIZE']
         x, y = [i + mns for i in self.position]
 
@@ -31,9 +31,8 @@ class Field:
         todo
         :return:
         """
-        fs = FieldService
-        num_of_considered_neighbours = fs.count_considered_neighbours(self.neighbours_values)
-        waged_neighbours_values = fs.get_values_of_waged_neighbours(self.neighbours_values)
+        num_of_considered_neighbours = (FC['MOORE_NEIGHBOURHOOD_SIZE']*2 + 1)**2
+        waged_neighbours_values = [sum([n * w if n else 0 for (n, w) in list(zip(self.neighbours_values, FC['WAGES']))])]
 
         result = sum(waged_neighbours_values) / num_of_considered_neighbours
 
