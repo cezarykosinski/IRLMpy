@@ -166,12 +166,13 @@ class Map:
         todo
         :return:
         """
-        for g in self._groups.keys():
+        keys = self._groups.keys()
+        for g in keys:
             group = self._groups[g]
             if group:
                 id_a, id_b  = group.group_connecting(self._fields)
                 if id_a != id_b:
-                    group.assign_new_fields(self._groups[id_b]._fields)
+                    group.assign_new_fields(self._groups[id_b]._fields, self._fields)
                     del self._groups[id_b]
 
 

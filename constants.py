@@ -11,7 +11,7 @@ FIELD_CONSTANTS = {
             1, 0, 1, 
             1, 1, 1],
     'MOORE_NEIGHBOURHOOD_SIZE': 1,
-    'CONDITION': 0.4,
+    'CONDITION': 0.5,
     'NAF': None
     }
     
