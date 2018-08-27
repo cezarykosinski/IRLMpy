@@ -7,9 +7,10 @@ class Field:
     Elementary object
 
     """
-    def __init__(self, x, y):
+    def __init__(self, x, y, mid):
         self.position = x, y
         self.value = FC['DEFAULT_VALUE']
+        self.map_id = mid 
         self.group_id = GC['NO_GROUP_ID']
         self.neighbours_values = []
         self.neighbours = []
@@ -18,7 +19,6 @@ class Field:
         
         mns = FC['MOORE_NEIGHBOURHOOD_SIZE']
         x, y = [i + mns for i in self.position]
-
         self.neighbours = [fields[x+i][y+j]
                            for j in range(-mns, mns+1)
                            for i in range(-mns, mns+1)]

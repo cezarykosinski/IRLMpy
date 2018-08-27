@@ -93,7 +93,7 @@ class MapContext:
 
     def get_south_bound(self, pos):
         new_pos = pos[0], pos[1] -1
-        bound = self.maps[new_pos].get_northeast_bound()
+        bound = self.maps[new_pos].get_north_bound()
         return bound
 
     def get_southwest_bound(self, pos):

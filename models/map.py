@@ -19,7 +19,7 @@ class Map:
 
         self.is_accessed = False
         self._groups = defaultdict(lambda: None)
-        self._fields = [[Field(fi, fj) 
+        self._fields = [[Field(fi, fj, self.id) 
                         for fj in range(MC['SIZE'])]
                         for fi in range(MC['SIZE'])]
 
@@ -62,11 +62,10 @@ class Map:
         todo
         :return:
         """
-        left_fields = self._northeastbound + self._eastbound + self._southeastbound
+        left_fields = self._northwestbound + self._westbound + self._southwestbound
         mid_fields = self._northbound + self._fields + self._southbound
-        right_fields = self._northwestbound + self._westbound + self._southwestbound
+        right_fields = self._northeastbound + self._eastbound + self._southeastbound
         all_fields = [i+j+g for i, j, g in zip(left_fields, mid_fields, right_fields)]
-
         for row in self._fields:
             for f in row:
                 f.set_neighbours(all_fields)
@@ -85,56 +84,56 @@ class Map:
         todo
         :return:
         """
-        return [row[(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1):] for row in self._fields[:(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1)]]
+        return [row[MC['SIZE'] - FC['MOORE_NEIGHBOURHOOD_SIZE']:] for row in self._fields[:FC['MOORE_NEIGHBOURHOOD_SIZE']]]
 
     def get_north_bound(self):
         """
         todo
         :return:
         """
-        return self._fields[:(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1)]
+        return self._fields[:FC['MOORE_NEIGHBOURHOOD_SIZE']]
 
     def get_northwest_bound(self):
         """
         todo
         :return:
         """
-        return [row[:(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1)] for row in self._fields[:(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1)]]
+        return [row[:FC['MOORE_NEIGHBOURHOOD_SIZE']] for row in self._fields[:FC['MOORE_NEIGHBOURHOOD_SIZE']]]
 
     def get_west_bound(self):
         """
         todo
         :return:
         """
-        return [row[:(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1)] for row in self._fields]
+        return [row[:FC['MOORE_NEIGHBOURHOOD_SIZE']] for row in self._fields]
     
     def get_southwest_bound(self):
         """
         todo
         :return:
         """
-        return [row[:(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1)] for row in self._fields[((FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1) + 1):]]
+        return [row[:FC['MOORE_NEIGHBOURHOOD_SIZE']] for row in self._fields[MC['SIZE'] - FC['MOORE_NEIGHBOURHOOD_SIZE']:]]
 
     def get_south_bound(self):
         """
         todo
         :return:
         """
-        return self._fields[((FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1)+1):]
+        return self._fields[MC['SIZE'] - FC['MOORE_NEIGHBOURHOOD_SIZE']:]
 
     def get_southeast_bound(self):
         """
         todo
         :return:
         """
-        return [row[(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1):] for row in self._fields[(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1):]]
+        return [row[MC['SIZE'] - FC['MOORE_NEIGHBOURHOOD_SIZE']:] for row in self._fields[MC['SIZE'] - FC['MOORE_NEIGHBOURHOOD_SIZE']:]]
 
     def get_east_bound(self):
         """
         todo
         :return:
         """
-        return [row[(FC['MOORE_NEIGHBOURHOOD_SIZE'] + 1):] for row in self._fields]
+        return [row[MC['SIZE'] - FC['MOORE_NEIGHBOURHOOD_SIZE']:] for row in self._fields]
 
     def get_starting_field(self):
         return self._groups[0].starting_field_position
