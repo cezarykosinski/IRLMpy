@@ -28,7 +28,7 @@ class GroupService:
     @staticmethod
     def _find_path(start_point, end_point, fields, levels, lvl):
         if end_point == start_point:
-            return [start_point]
+            return []
         x, y = end_point
         for pos in levels[lvl-1]:
             if pos in [n.position for n in fields[x][y].neighbours]:

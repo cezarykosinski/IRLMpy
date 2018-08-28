@@ -18,7 +18,7 @@ class Map:
         self._context = ctx
 
         self.is_accessed = False
-        self._groups = defaultdict(lambda: None)
+        self._groups = []
         self._fields = [[Field(fi, fj, self.id) 
                         for fj in range(MC['SIZE'])]
                         for fi in range(MC['SIZE'])]
@@ -159,24 +159,22 @@ class Map:
                 if f.value == FC['FLOOR'] and f.group_id == GC['NO_GROUP_ID']:
                     new_group = Group(f)
                     new_group.find_rest_of_the_fields(self._fields)
-                    self._groups.update({new_group.id: new_group})
+                    self._groups.append(new_group)
 
     def groups_connecting(self):
         """
         todo
         :return:
         """
-        keys = self._groups.keys()
-        for g in keys:
-            group = self._groups[g]
-            if group:
-                id_a, id_b  = group.group_connecting(self._fields)
-                if id_a != id_b:
-                    group.assign_new_fields(self._groups[id_b]._fields, self._fields)
-                    del self._groups[id_b]
+        groups_copy = (e for e in self._groups)
+        for group in groups_copy:
+            id_a, id_b  = group.group_connecting(self._fields)
+            if id_a != id_b:
+                group.assign_new_fields(self._groups[id_b]._fields, self._fields)
+                del self._groups[id_b]
 
 
-    def access(self): #direction?
+    def access(self):
         """
         todo
         :return:
