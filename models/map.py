@@ -166,12 +166,16 @@ class Map:
         todo
         :return:
         """
-        groups_copy = (e for e in self._groups)
-        for group in groups_copy:
+        #while(len(self._groups) > 2):
+        groups= (e for e in self._groups)
+        for group in groups:
             id_a, id_b  = group.group_connecting(self._fields)
             if id_a != id_b:
-                group.assign_new_fields(self._groups[id_b]._fields, self._fields)
-                del self._groups[id_b]
+                el_b = next(filter(lambda g: g.id == id_b, self._groups))
+                group.assign_new_fields(el_b._fields, self._fields)
+                indx_b = self._groups.index(el_b)
+                del self._groups[indx_b]
+        import pdb; pdb.set_trace()
 
 
     def access(self):
