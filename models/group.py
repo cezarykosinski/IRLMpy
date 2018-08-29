@@ -66,12 +66,11 @@ class Group:
         min_path = None
         min_points_pair = None
         dest_group_id = self.id  
-        border_last_index = len(self._border) - 1
+        border_last_index = len(self._border)
         n_samples = math.ceil(GC['EXITS_RATIO'] * border_last_index)
         exits_indexes = random.sample(range(border_last_index), n_samples)
-        for exit_point in [self._border[index] for index in exits_indexes]:
+        for exit_point in [self._border[index-1] for index in exits_indexes]:
             res= GroupService.find_path_to_closest_group(exit_point, fields, min_path_len)
-            print(res)
             points_pair, min_path_len, path = res
             min_points_pair = points_pair or min_points_pair
             min_path = path or min_path

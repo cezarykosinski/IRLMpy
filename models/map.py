@@ -166,17 +166,15 @@ class Map:
         todo
         :return:
         """
-        #while(len(self._groups) > 2):
-        groups= (e for e in self._groups)
-        for group in groups:
-            id_a, id_b  = group.group_connecting(self._fields)
-            if id_a != id_b:
-                el_b = next(filter(lambda g: g.id == id_b, self._groups))
-                group.assign_new_fields(el_b._fields, self._fields)
-                indx_b = self._groups.index(el_b)
-                del self._groups[indx_b]
-        import pdb; pdb.set_trace()
-
+        while(len(self._groups) > 1):
+            groups= (e for e in sorted(self._groups, key=lambda x: -len(x._border)))
+            for group in groups:
+                id_a, id_b  = group.group_connecting(self._fields)
+                if id_a != id_b:
+                    el_b = next(filter(lambda g: g.id == id_b, self._groups))
+                    group.assign_new_fields(el_b._fields, self._fields)
+                    indx_b = self._groups.index(el_b)
+                    del self._groups[indx_b]
 
     def access(self):
         """
