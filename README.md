@@ -1,6 +1,6 @@
-# Infinite Rogue-Like Map Generator (*i aka. Torchman)
+# Infinite Rogue-Like Map Generator (* aka. Torchman)
 
-_Currently not usable._
+__Currently not usable.__
 
 #### IN PROGRES/TODO:
 * [x] [GROUP] Finishing drilling <!--with randomized width of corridor. -->

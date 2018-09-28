@@ -22,24 +22,9 @@ class Map:
         self._fields = [[Field(fi, fj, self.id) 
                         for fj in range(MC['SIZE'])]
                         for fi in range(MC['SIZE'])]
-
         self._generate_noise()
 
-    def start(self):
-        self._northeastbound = self._context.get_northeast_bound(self.id)
-        self._northbound = self._context.get_north_bound(self.id)
-        self._northwestbound = self._context.get_northwest_bound(self.id)
-        self._westbound = self._context.get_west_bound(self.id)
-        self._southwestbound = self._context.get_southwest_bound(self.id)
-        self._southbound = self._context.get_south_bound(self.id)
-        self._southeastbound = self._context.get_southeast_bound(self.id)
-        self._eastbound = self._context.get_east_bound(self.id)
-
-        self._set_fields_neighbours()
-        self.calculate()
-        self.group_fields()
-
-    #do service'u 
+    # do service'u
     def _generate_noise(self):
         """
         todo
@@ -54,7 +39,7 @@ class Map:
             x = randint(0, MC['SIZE'] - 1)
             y = randint(0, MC['SIZE'] - 1)
             if self._fields[x][y].value == FC['DEFAULT_VALUE']:
-                self._fields[x][y].value = 1
+                self._fields[x][y].value = FC['ROCK']
                 amount_of_noise += 1
 
     def _set_fields_neighbours(self):
@@ -84,56 +69,56 @@ class Map:
         todo
         :return:
         """
-        return [row[MC['SIZE'] - FC['MOORE_NEIGHBOURHOOD_SIZE']:] for row in self._fields[:FC['MOORE_NEIGHBOURHOOD_SIZE']]]
+        return [row[MC['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:] for row in self._fields[:FC['NEIGHBOURHOOD_SIZE']]]
 
     def get_north_bound(self):
         """
         todo
         :return:
         """
-        return self._fields[:FC['MOORE_NEIGHBOURHOOD_SIZE']]
+        return self._fields[:FC['NEIGHBOURHOOD_SIZE']]
 
     def get_northwest_bound(self):
         """
         todo
         :return:
         """
-        return [row[:FC['MOORE_NEIGHBOURHOOD_SIZE']] for row in self._fields[:FC['MOORE_NEIGHBOURHOOD_SIZE']]]
+        return [row[:FC['NEIGHBOURHOOD_SIZE']] for row in self._fields[:FC['NEIGHBOURHOOD_SIZE']]]
 
     def get_west_bound(self):
         """
         todo
         :return:
         """
-        return [row[:FC['MOORE_NEIGHBOURHOOD_SIZE']] for row in self._fields]
+        return [row[:FC['NEIGHBOURHOOD_SIZE']] for row in self._fields]
     
     def get_southwest_bound(self):
         """
         todo
         :return:
         """
-        return [row[:FC['MOORE_NEIGHBOURHOOD_SIZE']] for row in self._fields[MC['SIZE'] - FC['MOORE_NEIGHBOURHOOD_SIZE']:]]
+        return [row[:FC['NEIGHBOURHOOD_SIZE']] for row in self._fields[MC['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:]]
 
     def get_south_bound(self):
         """
         todo
         :return:
         """
-        return self._fields[MC['SIZE'] - FC['MOORE_NEIGHBOURHOOD_SIZE']:]
+        return self._fields[MC['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:]
 
     def get_southeast_bound(self):
         """
         todo
         :return:
         """
-        return [row[MC['SIZE'] - FC['MOORE_NEIGHBOURHOOD_SIZE']:] for row in self._fields[MC['SIZE'] - FC['MOORE_NEIGHBOURHOOD_SIZE']:]]
+        return [row[MC['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:] for row in self._fields[MC['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:]]
 
     def get_east_bound(self):
         """
         todo
         :return:
         """
-        return [row[MC['SIZE'] - FC['MOORE_NEIGHBOURHOOD_SIZE']:] for row in self._fields]
+        return [row[MC['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:] for row in self._fields]
 
     def get_starting_field(self):
         return self._groups[0].starting_field_position
@@ -144,10 +129,13 @@ class Map:
         :return:
         """
         for i in range(MC['NUMBER_OF_ITERATIONS']):
+            self.display()
+            print()
             self._set_fields_neighbours_values()
             for row in self._fields:
                 for f in row:
                     f.calculate()
+
 
     def group_fields(self):
         """
@@ -181,9 +169,22 @@ class Map:
         todo
         :return:
         """
-        raise NotImplementedError
         self.is_accessed = True
-        self.groups_connecting()
+        # bounds can be passed as a parameters of start function
+        self._northeastbound = self._context.get_northeast_bound(self.id)
+        self._northbound = self._context.get_north_bound(self.id)
+        self._northwestbound = self._context.get_northwest_bound(self.id)
+        self._westbound = self._context.get_west_bound(self.id)
+        self._southwestbound = self._context.get_southwest_bound(self.id)
+        self._southbound = self._context.get_south_bound(self.id)
+        self._southeastbound = self._context.get_southeast_bound(self.id)
+        self._eastbound = self._context.get_east_bound(self.id)
+
+        self._set_fields_neighbours()
+        self.calculate()
+
+        # self.group_fields()
+        # self.groups_connecting()
 
     def make_move(self, rogue_data):
         position = rogue_data['position']
@@ -191,16 +192,17 @@ class Map:
         torch_size = rogue_data['torch_size']
         new_pos = (position[0] + move[0], position[1] + move[1])
         if MC['SIZE'] - torch_size not in new_pos and torch_size - 1 not in new_pos:
-           [f.values]
-           # field_info = self._fields[new_pos[0]][new_pos[1]].move(rogue_data)
-           # if field_info:
-           #     return field_info
-           # else: 
-           #     return self._fields[position[0]][position[1]].move(rogue_data)
+           # [f.values]
+           field_info = self._fields[new_pos[0]][new_pos[1]].move(rogue_data)
+           if field_info:
+               return field_info
+           else:
+               return self._fields[position[0]][position[1]].move(rogue_data)
         else:
             pass
-            #return that we crossed some border
-            #shouldn't we react to field from the map's neighbour being included in visible_surrounding ??
+            # return that we crossed some border
+            # shouldn't we react to field from the map's neighbour being included
+            # in visible_surrounding ??
 
     def display(self):
         """

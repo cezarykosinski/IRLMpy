@@ -46,7 +46,9 @@ class MapContext:
         """
         self.current_map = self.maps[map_id]
         self.generate_neighbours(map_id)
-        self.current_map.start()
+        # bounds = {'northbound': self.get_north_bound(map_id)}
+        # self.current_map.access(bounds)
+        self.current_map.access()
 
     def generate_neighbours(self, mid):
         """

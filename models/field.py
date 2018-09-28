@@ -7,41 +7,56 @@ class Field:
     Elementary object
 
     """
+
     def __init__(self, x, y, mid):
         self.position = x, y
         self.value = FC['DEFAULT_VALUE']
-        self.map_id = mid 
+        self.map_id = mid
         self.group_id = GC['NO_GROUP_ID']
-        self.neighbours_values = []
-        self.neighbours = []
+        self.neighbours_values = {}
+        self.neighbours = {}
 
     def set_neighbours(self, fields):
-        
-        mns = FC['MOORE_NEIGHBOURHOOD_SIZE']
-        x, y = [i + mns for i in self.position]
-        self.neighbours = [fields[x+i][y+j]
-                           for j in range(-mns, mns+1)
-                           for i in range(-mns, mns+1)]
+        # neighbours grouped by level of neighbourhoodism instead of row by row.
+        # This implementation can be moved to set_neighbours_values
+        n_size = FC['NEIGHBOURHOOD_SIZE']
+        x, y = [i + n_size for i in self.position]
+
+        for s in range(1, n_size + 1):
+            self.neighbours[s] = []
+            rng = list(range(-s, s + 1))
+
+            self.neighbours[s] += [fields[x - i][y - s] for i in rng if fields[x - i][y - s] not in self.neighbours[s]]
+
+            self.neighbours[s] += [fields[x - s][y + i] for i in rng if fields[x - s][y + i] not in self.neighbours[s]]
+
+            self.neighbours[s] += [fields[x + i][y + s] for i in rng if fields[x + i][y + s] not in self.neighbours[s]]
+
+            self.neighbours[s] += [fields[x + s][y - i] for i in rng if fields[x + s][y - i] not in self.neighbours[s]]
 
     def set_neighbours_values(self):
-        self.neighbours_values = [n.value for n in self.neighbours]
+        # import pdb; pdb.set_trace()
+        self.neighbours_values[0] = [self.value]
+        for s in range(1, FC['NEIGHBOURHOOD_SIZE']+1):
+            self.neighbours_values[s] = [n.value for n in self.neighbours[s]]
 
     def calculate(self):
+        # import pdb; pdb.set_trace()
         """
         todo
         :return:
         """
-        num_of_considered_neighbours = (FC['MOORE_NEIGHBOURHOOD_SIZE']*2 + 1)**2
-        waged_neighbours_values = [sum([n * w if n else 0 for (n, w) in list(zip(self.neighbours_values, FC['WAGES']))])]
-
-        result = sum(waged_neighbours_values) / num_of_considered_neighbours
-
-        self.value = FC['ROCK'] if result > FC['CONDITION'] else FC['FLOOR'] #NOT GENERIC
+        is_rock = False
+        for lvl in range(FC['NEIGHBOURHOOD_SIZE']+1):
+            num_of_considered_neighbours = lvl*8 if lvl else 1
+            waged_neighbours_values = [nv * w for (nv, w) in list(zip(self.neighbours_values[lvl], FC['WAGES'][lvl]))]
+            ratio = sum(waged_neighbours_values) / num_of_considered_neighbours
+            is_rock = is_rock or eval(str(ratio) + FC['CONDITION'][lvl])
+        self.value = FC['ROCK'] if is_rock else FC['FLOOR']
 
     def move(self, rogue_data):
         if self.value == FC['ROCK']:
-            return None 
-            #lame... maybe something else to return?
+            return None
         else:
             field_info = {'visible_surrounding': self.get_surrounding(rogue_data[''])}
             return field_info
@@ -59,3 +74,6 @@ class Field:
         :return:
         """
         return [str(self.group_id), "#"][self.value] + " "
+
+    def get_surrounding(self, param):
+        pass
