@@ -1,5 +1,4 @@
 from random import seed, randint
-from collections import defaultdict
 
 from models.field import Field
 from models.group import Group
@@ -187,17 +186,16 @@ class Map:
         # self.groups_connecting()
 
     def make_move(self, rogue_data):
-        position = rogue_data['position']
-        move = rogue_data['move']
+        px, py = rogue_data['position']
+        mx, my = rogue_data['move']
         torch_size = rogue_data['torch_size']
-        new_pos = (position[0] + move[0], position[1] + move[1])
-        if MC['SIZE'] - torch_size not in new_pos and torch_size - 1 not in new_pos:
-           # [f.values]
-           field_info = self._fields[new_pos[0]][new_pos[1]].move(rogue_data)
+        np_x, np_y = (px + mx, py + my)
+        if MC['SIZE'] - torch_size not in [np_x, np_y] and torch_size - 1 not in [np_x, np_y]:
+           field_info = self._fields[np_x][np_y].move(rogue_data)
            if field_info:
                return field_info
            else:
-               return self._fields[position[0]][position[1]].move(rogue_data)
+               return self._fields[px][py].move(rogue_data)
         else:
             pass
             # return that we crossed some border

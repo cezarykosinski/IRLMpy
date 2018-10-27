@@ -6,7 +6,6 @@ class GroupService:
 
     @staticmethod
     def assign_group_to_fields(group_id, start_pos, fields):
-        #import pdb; pdb.set_trace()
         queue = [start_pos]
         assigned_fields = []
         map_id = fields[start_pos[0]][start_pos[1]].map_id
