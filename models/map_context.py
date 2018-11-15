@@ -1,5 +1,29 @@
 from models import map as m
-from constants import MAP_CONTEXT_CONSTANTS as MCC, ROGUE_CONSTANTS as RC
+from constants import MAP_CONTEXT_CONSTANTS as MCC
+
+
+def get_ranges(pos, ts, mid):
+    sx, sy = pos
+    tx, ty = ts
+    rx, ry  = (sx + tx, sy + ty)
+    size = MCC['SIZE']
+    res  = []
+    if rx > size:
+        rx = size
+        nid = mid[0], mid[1]-1
+        tx -= size-sx
+        res += [{"pos": (0,sy), "ts": tx, "id": nid}]
+    elif rx < 0:
+        rx = sx
+        sx = 0
+        nid = mid[0], mid[1] + 1
+        tx -= sx
+        res = [{"pos": (size-1, sy), "ts": tx, "id": nid}]
+    if ry > size:
+
+    elif ry < 0:
+
+    return [{"pos":(sx,sy),"ts":(rx,ry), "id":mid}]
 
 
 class MapContext:
@@ -25,8 +49,14 @@ class MapContext:
         self.maps.update({(0, 0): m.Map((0, 0), self)})
         self.access_map((0, 0))
 
-       def get_field_surroundings_ranges(self, param, torch_size):
-
+    def get_field_surroundings_ranges(self, pos, torch_size, map_id):
+        res = []
+        for ts in [(torch_size, torch_size),
+                   (torch_size, -torch_size),
+                   (-torch_size, -torch_size),
+                   (-torch_size, torch_size)]:
+            res += get_ranges(pos, ts, map_id)
+        return res
     def get_field_surroundings_values(self, map_field_ranges):
         for rng, id in map_field_ranges:
             #take rng from map of given id
@@ -41,7 +71,7 @@ class MapContext:
            rogue_init_data = rogue.get_init_data()
            map_response = self.current_map.make_move((rogue_init_data, self.current_map.get_starting_field))
            while rogue.torch_size:
-               map_field_ranges = get_field_surroundings_ranges(map_response['position'], rogue.torch_size)
+               map_field_ranges = get_field_surroundings_ranges(map_response['position'], rogue.torch_size, self.current_map.id)
                for _, id in map_field_ranges:
                    self.access_map(id)
                map_response['visible_surroundings'] = self.get_field_surroundings_values(map_field_ranges)
