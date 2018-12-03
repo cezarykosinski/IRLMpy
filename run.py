@@ -1,4 +1,4 @@
-from models.map_context import MapContext
+from src.maps.map_context import MapContext
 ctx = MapContext()
 ctx.start()
 print()

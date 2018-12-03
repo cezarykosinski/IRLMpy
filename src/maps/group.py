@@ -2,7 +2,7 @@ import random
 import math
 
 from constants import MAP_CONSTANTS as MC, FIELD_CONSTANTS as FC, GROUP_CONSTANTS as GC
-from service.group import GroupService
+from src.service import GroupService
 
 
 class Group:
