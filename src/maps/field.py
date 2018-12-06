@@ -54,19 +54,15 @@ class Field:
             is_rock = is_rock or eval(str(ratio) + FC['CONDITION'][lvl])
         self.value = FC['ROCK'] if is_rock else FC['FLOOR']
 
-    def move(self, rogue_data):
-        if self.value == FC['ROCK']:
-            return None
-        else:
-            field_info = {'visible_surrounding': self.get_surrounding(rogue_data[''])}
-            return field_info
+    def is_rock(self):
+        return self.value == FC['ROCK']
 
     def display(self):
         """
         todo
         :return:
         """
-        return [".", "#"][self.value] + " "
+        return [".", "#"][self.value] # + " "
 
     def display_group(self):
         """
@@ -74,6 +70,3 @@ class Field:
         :return:
         """
         return [str(self.group_id), "#"][self.value] + " "
-
-    def get_surrounding(self, param):
-        pass

@@ -147,23 +147,8 @@ class Map:
                     new_group.find_rest_of_the_fields(self._fields)
                     self._groups.append(new_group)
 
-    def groups_connecting(self):
-        """
-        todo
-        :return:
-        """
-        while (len(self._groups) > 1):
-            groups = (e for e in sorted(self._groups, key=lambda x: -len(x._border)))
-            for group in groups:
-                id_a, id_b = group.group_connecting(self._fields)
-                if id_a != id_b:
-                    el_b = next(filter(lambda g: g.id == id_b, self._groups))
-                    group.assign_new_fields(el_b._fields, self._fields)
-                    indx_b = self._groups.index(el_b)
-                    del self._groups[indx_b]
-
     # noinspection PyAttributeOutsideInit
-    def access(self):
+    def commit(self):
         """
         todo
         :return:
@@ -182,21 +167,17 @@ class Map:
         self._set_fields_neighbours()
         self.calculate()
 
-        # self.group_fields()
-        # self.groups_connecting()
+        self.group_fields()
 
-    def make_move(self, rogue_data):
-        # px, py = rogue_data['position']
-        # mx, my = rogue_data['move']
-        # torch_size = rogue_data['torch_size']
-        # np_x, np_y = (px + mx, py + my)
-        # if MC['SIZE'] - torch_size not in [np_x, np_y] and torch_size - 1 not in [np_x, np_y]:
-        #    field_info = self._fields[np_x][np_y].move(rogue_data)
-        # if field_info:
-        #    return field_info
-        # else:
-        #    return self._fields[px][py].move(rogue_data)
-        pass
+    def apply_move(self, rogue_data):
+        px, py = rogue_data['position']
+        mx, my = rogue_data['move']
+        size = MC['SIZE']
+
+        np_x, np_y = ((px + mx) % size, (py + my) % size)
+        if self._fields[np_x][np_y].is_rock():
+            rogue_data['position'] = (np_x, np_y)
+        return rogue_data
 
     def display(self):
         """

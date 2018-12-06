@@ -53,30 +53,3 @@ class Group:
             if FC['ROCK'] in [n.value for n in fields[x][y].neighbours]:
                 self._border.insert(0, pos)
             fields[x][y].group_id = self.id
-
-
-    def group_connecting(self, fields):
-        """
-        todo
-        :param fields:
-        :return:
-        """
-        #import pdb; pdb.set_trace()
-        min_path_len = MC['SIZE']**2
-        min_path = None
-        min_points_pair = None
-        dest_group_id = self.id  
-        border_last_index = len(self._border)
-        n_samples = math.ceil(GC['EXITS_RATIO'] * border_last_index)
-        exits_indexes = random.sample(range(border_last_index), n_samples)
-        for exit_point in [self._border[index-1] for index in exits_indexes]:
-            res= GroupService.find_path_to_closest_group(exit_point, fields, min_path_len)
-            points_pair, min_path_len, path = res
-            min_points_pair = points_pair or min_points_pair
-            min_path = path or min_path
-        if min_points_pair:
-            GroupService.drill_path(min_path, fields)
-            self.assign_new_fields(min_path, fields)
-            dx, dy = min_points_pair[1]
-            dest_group_id = fields[dx][dy].group_id
-        return self.id, dest_group_id

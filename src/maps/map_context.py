@@ -1,8 +1,9 @@
 import functools
-
-from constants import MAP_CONTEXT_CONSTANTS as MCC
-from src.maps import map as m
 from functools import cmp_to_key
+
+from constants import MAP_CONSTANTS as MC
+from src.maps import map as m
+
 
 class MapContext:
     """
@@ -19,14 +20,6 @@ class MapContext:
         self.current_map = None
         self.rogue = rogue
 
-    def start(self):
-        """
-        todo
-        :return:
-        """
-        self.maps.update({(0, 0): m.Map((0, 0), self)})
-        self.access_map((0, 0))
-
     @staticmethod
     def mid_comp(m1, m2):
         x1, y1 = m1
@@ -40,7 +33,7 @@ class MapContext:
         start_x, start_y = start_position
         dir_x, dir_y = direction
         dest_x, dest_y = (start_x + dir_x, start_y + dir_y)
-        size = MCC['SIZE']
+        size = MC['SIZE']
         ranges_list = []
 
         if dest_x > size:
@@ -93,8 +86,7 @@ class MapContext:
             result[rng['id']] = {i: rng[i] for i in rng if i != 'id'}
         return result
 
-    @staticmethod
-    def get_field_surroundings_values(map_field_ranges):
+    def get_field_surroundings_values(self, map_field_ranges):
         sorted_ids = sorted(map_field_ranges.keys(), key=cmp_to_key(MapContext.mid_comp))
         rows_values = {}
         for id in sorted_ids:
@@ -104,7 +96,7 @@ class MapContext:
                 rows_values[id[1]] = [row + vrow for row, vrow in zip(rows_values[id[1]], vals)]
             else:
                 rows_values[id[1]] = vals
-        return functools.reduce(lambda x, y: x+y, rows_values, [])
+        return functools.reduce(lambda x, y: x + y, rows_values, [])
 
     def start_with_rogue(self, rogue):
         """
@@ -112,44 +104,79 @@ class MapContext:
         :return:
         """
         self.maps.update({(0, 0): m.Map((0, 0), self)})
-        self.access_map((0, 0))
-        rogue_init_data = rogue.get_init_data()
-        map_response = self.current_map.make_move((rogue_init_data, self.current_map.get_starting_field))
+        self.reveal_map((0, 0))
+        rogue_response = rogue.get_init_data()
         while rogue.torch_size:
-            map_field_ranges = MapContext.get_field_surroundings_ranges(map_response['position'], rogue.torch_size,
+            pos = rogue_response['position']
+            mov = rogue_response['move']
+            map_field_ranges = MapContext.get_field_surroundings_ranges(rogue_response['position'],
+                                                                        rogue_response['torch_size'],
                                                                         self.current_map.id)
             for rng in map_field_ranges:
-                self.access_map(rng['id'])
+                self.reveal_map(rng['id'])
+            n_pos = pos[0] + mov[0], pos[1] + mov[1]
+            size = MC['SIZE'] - 1
+            shift = (0, 0)
+            if n_pos[0] > size:
+                shift[1] -= 1
+            elif n_pos[0] < 0:
+                shift[1] += 1
+            if n_pos[1] > size:
+                shift[0] += 1
+            elif n_pos[1] < 0:
+                shift[0] -= 1
+
+            n_mid = self.current_map.id[0] + shift[0], self.current_map.id[1] + shift[1]
+            self.current_map = self.maps[n_mid]
+            map_response = self.current_map.apply_move(rogue_response)
             map_response['visible_surroundings'] = self.get_field_surroundings_values(map_field_ranges)
             rogue_response = rogue.make_move(map_response)
-            map_response = self.current_map.make_move(rogue_response)
 
-    def access_map(self, map_id):
+    def start(self, size):
+        """
+        todo
+        :return:
+        """
+        self.maps.update({(0, 0): m.Map((0, 0), self)})
+        queue = [((0, 0), size)]
+        while queue:
+            mid, size = queue[0]
+            queue = queue[1:]
+            self.reveal_map(mid)
+            if size:
+                for nid in self.get_map_neighbours_ids(mid):
+                    if not self.maps[nid].is_accessed:
+                        queue += [(nid, size-1)]
+
+    def reveal_map(self, map_id):
         """
         todo
         :param map_id:
         :return:
         """
-        # self.current_map = self.maps[map_id]  # ?
         self.generate_neighbours(map_id)
-        # bounds = {'northbound': self.get_north_bound(map_id)}
-        # self.current_map.access(bounds)
-        self.current_map.access()
+        self.maps[map_id].commit()
 
-    def generate_neighbours(self, mid):
+    @staticmethod
+    def get_map_neighbours_ids(map_id):
+        return [(map_id[0] + x, map_id[1] + y)
+                for x, y in [(-1, 1), (0, 1),
+                             (1, 1), (-1, 0),
+                             (1, 0), (-1, -1),
+                             (0, -1), (1, -1)]]
+
+    def generate_neighbours(self, map_id):
         """
         todo
         :return:
         """
 
         map_keys = self.maps.keys()
-        potential_keys = [(mid[0] + x, mid[1] + y) for x, y in
-                          [(-1, 1), (0, 1), (1, 1), (-1, 0), (1, 0), (-1, -1), (0, -1), (1, -1)]]
-        for key in potential_keys:
+        neighbour_map_ids = self.get_map_neighbours_ids(map_id)
+        for key in neighbour_map_ids:
             if key not in map_keys:
                 self.maps.update({key: m.Map(key, self)})
 
-    # tried to generalize following methods, however it was saving only 1 line
     def get_northeast_bound(self, p):
         new_pos = p[0] + 1, p[1] + 1
         bound = self.maps[new_pos].get_southwest_bound()
