@@ -29,7 +29,7 @@ class Group:
         :param fields:
         :return:
         """
-        self._fields = GroupService.assign_group_to_fields(self.id, self.starting_field_position, fields)
+        self._fields = Group.assign_group_to_fields(self.id, self.starting_field_position, fields)
         self.update_the_border(fields)
 
     def update_the_border(self, fields):
@@ -46,10 +46,16 @@ class Group:
         """
         return len([pos for pos in self._border if MC['SIZE']-1 in pos]) > 0
 
-    def assign_new_fields(self, positions, fields):
-        self._fields.extend(positions)
-        for pos in positions:
-            x, y = pos
-            if FC['ROCK'] in [n.value for n in fields[x][y].neighbours]:
-                self._border.insert(0, pos)
-            fields[x][y].group_id = self.id
+    @staticmethod
+    def assign_group_to_fields(group_id, start_pos, fields):
+        queue = [start_pos]
+        assigned_fields = []
+        map_id = fields[start_pos[0]][start_pos[1]].map_id
+        while queue:
+            x, y = queue.pop()
+            assigned_fields.append((x,y))
+            fields[x][y].group_id = group_id
+            for n in fields[x][y].neighbours:
+                if n.value == FC['FLOOR'] and n.map_id == map_id and n.group_id == GROUP_CONSTANTS['NO_GROUP_ID'] and n.position not in assigned_fields:
+                    queue.append(n.position)
+        return assigned_fields
