@@ -1,8 +1,9 @@
 from random import seed, randint
 
 from constants import FIELD_CONSTANTS as FC
-from constants import GROUP_CONSTANTS as GC
-from constants import MAP_CONSTANTS as MC
+from config import GROUP_CONFIG as GC
+from config import MAP_CONFIG as MCONFIG
+from constants import MAP_CONSTANTS as MCONSTANTS
 from src.maps.field import Field
 from src.maps import Group
 
@@ -18,8 +19,8 @@ class Map:
         self.is_accessed = False
         self._groups = []
         self._fields = [[Field(fi, fj, self.id)
-                         for fj in range(MC['SIZE'])]
-                        for fi in range(MC['SIZE'])]
+                         for fj in range(MCONFIG['SIZE'])]
+                        for fi in range(MCONFIG['SIZE'])]
         self._generate_noise()
 
     # do service'u
@@ -28,14 +29,14 @@ class Map:
         todo
         :return:
         """
-        fields_no = MC['SIZE'] ** 2
+        fields_no = MCONFIG['SIZE'] ** 2
         amount_of_noise = 0
 
         seed(self._context.id)
 
-        while (amount_of_noise / fields_no) < MC['INITIAL_RATIO']:
-            x = randint(0, MC['SIZE'] - 1)
-            y = randint(0, MC['SIZE'] - 1)
+        while (amount_of_noise / fields_no) < MCONSTANTS['INITIAL_RATIO']:
+            x = randint(0, MCONFIG['SIZE'] - 1)
+            y = randint(0, MCONFIG['SIZE'] - 1)
             if self._fields[x][y].value == FC['DEFAULT_VALUE']:
                 self._fields[x][y].value = FC['ROCK']
                 amount_of_noise += 1
@@ -67,7 +68,7 @@ class Map:
         todo
         :return:
         """
-        return [row[MC['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:] for row in self._fields[:FC['NEIGHBOURHOOD_SIZE']]]
+        return [row[MCONFIG['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:] for row in self._fields[:FC['NEIGHBOURHOOD_SIZE']]]
 
     def get_north_bound(self):
         """
@@ -95,29 +96,29 @@ class Map:
         todo
         :return:
         """
-        return [row[:FC['NEIGHBOURHOOD_SIZE']] for row in self._fields[MC['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:]]
+        return [row[:FC['NEIGHBOURHOOD_SIZE']] for row in self._fields[MCONFIG['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:]]
 
     def get_south_bound(self):
         """
         todo
         :return:
         """
-        return self._fields[MC['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:]
+        return self._fields[MCONFIG['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:]
 
     def get_southeast_bound(self):
         """
         todo
         :return:
         """
-        return [row[MC['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:] for row in
-                self._fields[MC['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:]]
+        return [row[MCONFIG['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:] for row in
+                self._fields[MCONFIG['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:]]
 
     def get_east_bound(self):
         """
         todo
         :return:
         """
-        return [row[MC['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:] for row in self._fields]
+        return [row[MCONFIG['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:] for row in self._fields]
 
     def get_starting_field(self):
         return self._groups[0].starting_field_position
@@ -127,7 +128,7 @@ class Map:
         todo
         :return:
         """
-        for i in range(MC['NUMBER_OF_ITERATIONS']):
+        for i in range(MCONSTANTS['NUMBER_OF_ITERATIONS']):
             self.display()
             print()
             self._set_fields_neighbours_values()
@@ -172,7 +173,7 @@ class Map:
     def apply_move(self, rogue_data):
         px, py = rogue_data['position']
         mx, my = rogue_data['move']
-        size = MC['SIZE']
+        size = MCONFIG['SIZE']
 
         np_x, np_y = ((px + mx) % size, (py + my) % size)
         if self._fields[np_x][np_y].is_rock():

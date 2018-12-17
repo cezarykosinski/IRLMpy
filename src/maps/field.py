@@ -1,4 +1,5 @@
-from constants import GROUP_CONSTANTS as GC
+from config import GROUP_CONFIG as GC
+from config import FIELD_CONFIG as FCONFIG
 from constants import FIELD_CONSTANTS as FC
 
 
@@ -10,7 +11,7 @@ class Field:
 
     def __init__(self, x, y, mid):
         self.position = x, y
-        self.value = FC['DEFAULT_VALUE']
+        self.value = FCONFIG['DEFAULT_VALUE']
         self.map_id = mid
         self.group_id = GC['NO_GROUP_ID']
         self.neighbours_values = {}
@@ -52,10 +53,10 @@ class Field:
             waged_neighbours_values = [nv * w for (nv, w) in list(zip(self.neighbours_values[lvl], FC['WAGES'][lvl]))]
             ratio = sum(waged_neighbours_values) / num_of_considered_neighbours
             is_rock = is_rock or eval(str(ratio) + FC['CONDITION'][lvl])
-        self.value = FC['ROCK'] if is_rock else FC['FLOOR']
+        self.value = FCONFIG['ROCK'] if is_rock else FC['FLOOR']
 
     def is_rock(self):
-        return self.value == FC['ROCK']
+        return self.value == FCONFIG['ROCK']
 
     def display(self):
         """
