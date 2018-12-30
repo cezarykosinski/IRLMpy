@@ -1,7 +1,9 @@
 import functools
 from functools import cmp_to_key
+from itertools import groupby
 
 from constants import MAP_CONSTANTS as MC
+from config import MAP_CONFIG as MConfig
 from src.maps import map as m
 
 
@@ -132,7 +134,7 @@ class MapContext:
             map_response['visible_surroundings'] = self.get_field_surroundings_values(map_field_ranges)
             rogue_response = rogue.make_move(map_response)
 
-    def start(self, size):
+    def start(self, size=0):
         """
         todo
         :return:
@@ -218,4 +220,20 @@ class MapContext:
         return bound
 
     def display(self):
-        pass
+        mid_list = self.maps.keys()
+        x_min = min(mid_list, key=lambda x: x[0])
+        x_max = max(mid_list, key=lambda x: x[0])
+        y_min = min(mid_list, key=lambda x: x[1])
+        y_max = max(mid_list, key=lambda x: x[1])
+        res = []
+        for x in range(x_min, x_max+1):
+            row = []
+            for y in range(y_min, y_max+1):
+                pos = x, y
+                if pos in mid_list:
+                    el = self.maps[pos].print()
+                else:
+                    el = ["#" * MConfig['SIZE']] * MConfig['SIZE']
+                row.append(el)
+            res += row
+

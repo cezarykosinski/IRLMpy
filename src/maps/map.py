@@ -32,7 +32,7 @@ class Map:
         fields_no = MCONFIG['SIZE'] ** 2
         amount_of_noise = 0
 
-        seed(self._context.id)
+        seed(self._context.id*100 + self.id[0]*10 + self.id[1])
 
         while (amount_of_noise / fields_no) < MCONSTANTS['INITIAL_RATIO']:
             x = randint(0, MCONFIG['SIZE'] - 1)
@@ -201,3 +201,16 @@ class Map:
             for f in row:
                 row_display += f.display_group()
             print(row_display)
+
+    def print(self):
+        """
+        todo
+        :return:
+        """
+        output = []
+        for row in self._fields:
+            row_display = ""
+            for f in row:
+                row_display += f.display()
+            output += row_display
+        return output
