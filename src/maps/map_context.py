@@ -1,6 +1,4 @@
-import functools
-from functools import cmp_to_key
-from itertools import groupby
+from functools import cmp_to_key, reduce
 
 from constants import MAP_CONSTANTS as MC
 from config import MAP_CONFIG as MConfig
@@ -220,20 +218,23 @@ class MapContext:
         return bound
 
     def display(self):
+        map_size = MConfig['SIZE']
         mid_list = self.maps.keys()
-        x_min = min(mid_list, key=lambda x: x[0])
-        x_max = max(mid_list, key=lambda x: x[0])
-        y_min = min(mid_list, key=lambda x: x[1])
-        y_max = max(mid_list, key=lambda x: x[1])
-        res = []
-        for x in range(x_min, x_max+1):
+        x_min = min(mid_list, key=lambda x: x[0])[0]
+        x_max = max(mid_list, key=lambda x: x[0])[0]
+        y_min = min(mid_list, key=lambda x: x[1])[1]
+        y_max = max(mid_list, key=lambda x: x[1])[1]
+
+        res = ""
+        for y in range(y_max, y_min-1, -1):
             row = []
-            for y in range(y_min, y_max+1):
+            for x in range(x_min, x_max+1):
                 pos = x, y
                 if pos in mid_list:
                     el = self.maps[pos].print()
                 else:
-                    el = ["#" * MConfig['SIZE']] * MConfig['SIZE']
+                    el = ["#" * map_size] * map_size
                 row.append(el)
-            res += row
-
+            for i in range(map_size):
+                res += reduce(lambda string, lss_strings: string + lss_strings[i], row, "") + "\n"
+        print(res)

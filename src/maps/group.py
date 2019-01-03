@@ -1,15 +1,15 @@
 import random
 import math
 
-from constants import MAP_CONSTANTS as MC, FIELD_CONSTANTS as FC, GROUP_CONSTANTS as GC
-from src.service import GroupService
+from constants import MAP_CONSTANTS as MC, FIELD_CONSTANTS as FC
+from config import GROUP_CONFIG as GC
 
 
 class Group:
     """
     todo
     """
-    LASTEST_ID = 0
+    LATEST_ID = 0
 
     # todo : discuss if group obj should contains field's obj's
     def __init__(self, starting_field):
@@ -17,11 +17,11 @@ class Group:
         todo
         :param starting_field:
         """
-        self.id = Group.LASTEST_ID
+        self.id = Group.LATEST_ID
         self.starting_field_position = starting_field.position
         self._border = []
         self._fields = []
-        Group.LASTEST_ID += 1
+        Group.LATEST_ID += 1
     
     def find_rest_of_the_fields(self, fields):
         """

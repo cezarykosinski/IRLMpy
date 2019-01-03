@@ -1,11 +1,11 @@
+from functools import reduce, partial
 from random import seed, randint
 
 from constants import FIELD_CONSTANTS as FC
-from config import GROUP_CONFIG as GC
-from config import MAP_CONFIG as MCONFIG
+from config import GROUP_CONFIG as GC, MAP_CONFIG as MCONFIG, FIELD_CONFIG as FCONFIG
 from constants import MAP_CONSTANTS as MCONSTANTS
 from src.maps.field import Field
-from src.maps import Group
+from src.maps.group import Group
 
 class Map:
     """
@@ -122,6 +122,10 @@ class Map:
 
     def get_starting_field(self):
         return self._groups[0].starting_field_position
+
+    def get_no_of_floors(self):
+        func = partial(filter, (lambda f: f.value == FCONFIG['FLOOR']))
+        return reduce(lambda x, y: x+y, map(lambda row: len(list(func(row))), self._fields), 0)
 
     def calculate(self):
         """
