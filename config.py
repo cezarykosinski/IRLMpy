@@ -1,8 +1,9 @@
 EVO_CONFIG = {
-    'POPULATION_SIZE': 10,
+    'POPULATION_SIZE': 4,
     'DROP_RATIO': 0.5,
     'NO_OF_MAPS': 1,
-    'NO_OF_ITERATIONS': 1
+    'NO_OF_ITERATIONS': 1,
+    'POOL_SIZE': 4
 }
 
 FIELD_CONFIG = {

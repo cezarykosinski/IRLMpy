@@ -37,8 +37,8 @@ class Map:
         while (amount_of_noise / fields_no) < MCONSTANTS['INITIAL_RATIO']:
             x = randint(0, MCONFIG['SIZE'] - 1)
             y = randint(0, MCONFIG['SIZE'] - 1)
-            if self._fields[x][y].value == FC['DEFAULT_VALUE']:
-                self._fields[x][y].value = FC['ROCK']
+            if self._fields[x][y].value == FCONFIG['DEFAULT_VALUE']:
+                self._fields[x][y].value = FCONFIG['ROCK']
                 amount_of_noise += 1
 
     def _set_fields_neighbours(self):
@@ -133,8 +133,6 @@ class Map:
         :return:
         """
         for i in range(MCONSTANTS['NUMBER_OF_ITERATIONS']):
-            self.display()
-            print()
             self._set_fields_neighbours_values()
             for row in self._fields:
                 for f in row:
@@ -147,7 +145,7 @@ class Map:
         """
         for row in self._fields:
             for f in row:
-                if f.value == FC['FLOOR'] and f.group_id == GC['NO_GROUP_ID']:
+                if f.value == FCONFIG['FLOOR'] and f.group_id == GC['NO_GROUP_ID']:
                     new_group = Group(f)
                     new_group.find_rest_of_the_fields(self._fields)
                     self._groups.append(new_group)
@@ -216,5 +214,5 @@ class Map:
             row_display = ""
             for f in row:
                 row_display += f.display()
-            output += row_display
+            output += [row_display]
         return output

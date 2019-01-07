@@ -26,13 +26,9 @@ class Field:
         for s in range(1, n_size + 1):
             self.neighbours[s] = []
             rng = list(range(-s, s + 1))
-
             self.neighbours[s] += [fields[x - i][y - s] for i in rng if fields[x - i][y - s] not in self.neighbours[s]]
-
             self.neighbours[s] += [fields[x - s][y + i] for i in rng if fields[x - s][y + i] not in self.neighbours[s]]
-
             self.neighbours[s] += [fields[x + i][y + s] for i in rng if fields[x + i][y + s] not in self.neighbours[s]]
-
             self.neighbours[s] += [fields[x + s][y - i] for i in rng if fields[x + s][y - i] not in self.neighbours[s]]
 
     def set_neighbours_values(self):
@@ -51,9 +47,9 @@ class Field:
         for lvl in range(FC['NEIGHBOURHOOD_SIZE']+1):
             num_of_considered_neighbours = lvl*8 if lvl else 1
             waged_neighbours_values = [nv * w for (nv, w) in list(zip(self.neighbours_values[lvl], FC['WAGES'][lvl]))]
-            ratio = sum(waged_neighbours_values) / num_of_considered_neighbours
+            ratio = float(sum(waged_neighbours_values)) / float(num_of_considered_neighbours)
             is_rock = is_rock or eval(str(ratio) + FC['CONDITION'][lvl])
-        self.value = FCONFIG['ROCK'] if is_rock else FC['FLOOR']
+            self.value = FCONFIG['ROCK'] if is_rock else FCONFIG['FLOOR']
 
     def is_rock(self):
         return self.value == FCONFIG['ROCK']
@@ -63,11 +59,11 @@ class Field:
         todo
         :return:
         """
-        return [".", "#"][self.value] # + " "
+        return [".", "#"][self.value]
 
     def display_group(self):
         """
         todo
         :return:
         """
-        return [str(self.group_id), "#"][self.value] + " "
+        return [str(self.group_id), "#"][self.value]

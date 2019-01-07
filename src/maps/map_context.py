@@ -1,3 +1,4 @@
+import functools
 from functools import cmp_to_key, reduce
 
 from constants import MAP_CONSTANTS as MC
@@ -230,7 +231,7 @@ class MapContext:
             row = []
             for x in range(x_min, x_max+1):
                 pos = x, y
-                if pos in mid_list:
+                if pos in mid_list and self.maps[pos].is_accessed:
                     el = self.maps[pos].print()
                 else:
                     el = ["#" * map_size] * map_size

@@ -1,28 +1,27 @@
 FIELD_CONSTANTS = {
     'NEIGHBOURHOOD_SIZE': 2,
-    'WAGES': {
-        0: [0],
-        1: [1, 1, 1,
-            1, 1,
-            1, 1, 1],
-        2: [1,1,1,1,
-            1,1,1,1,
-            1,1,1,1,
-            1,1,1,1]},
-    'CONDITION': {0: "> 1",
-                  1: ">= 0.5",
-                  2: "< 0.125"}
-    }
+    'WAGES': [[0],
+              [1, 1, 1,
+               1, 1,
+               1, 1, 1],
+              [1, 1, 1, 1,
+               1, 1, 1, 1,
+               1, 1, 1, 1,
+               1, 1, 1, 1]],
+    'CONDITION': ["> 1",
+                  ">= 0.5",
+                  "< 0.125"]
+}
 
 MAP_CONSTANTS = {
-    'INITIAL_RATIO': 0.4,
-    'NUMBER_OF_ITERATIONS': 8,
-    }
+    'INITIAL_RATIO': 0.5,
+    'NUMBER_OF_ITERATIONS': 4,
+}
 
 ROGUE_CONSTANTS = {
     'MAX_TORCH_SIZE': 5,
     'TORCH_BURN_TIME': 50
-    }
+}
 
 #
 # MAP_CONTEXT_CONSTANTS = {
@@ -30,4 +29,3 @@ ROGUE_CONSTANTS = {
 #     'DEFAULT_VERTICAL_BOUND': [[FIELD_CONSTANTS['DEFAULT_VALUE']] * FIELD_CONSTANTS['NEIGHBOURHOOD_SIZE']] * MAP_CONSTANTS['SIZE'],
 #     'DEFAULT_CORNER_BOUND': [[FIELD_CONSTANTS['DEFAULT_VALUE']] * FIELD_CONSTANTS['NEIGHBOURHOOD_SIZE']] * FIELD_CONSTANTS['NEIGHBOURHOOD_SIZE']
 #     }
-
