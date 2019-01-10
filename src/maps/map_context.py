@@ -1,8 +1,9 @@
 import functools
+import logging
 from functools import cmp_to_key, reduce
 
-from constants import MAP_CONSTANTS as MC
-from config import MAP_CONFIG as MConfig
+from constants import FIELD_CONSTANTS
+from config import MAP_CONFIG as MC
 from src.maps import map as m
 
 
@@ -219,7 +220,7 @@ class MapContext:
         return bound
 
     def display(self):
-        map_size = MConfig['SIZE']
+        map_size = MC['SIZE']
         mid_list = self.maps.keys()
         x_min = min(mid_list, key=lambda x: x[0])[0]
         x_max = max(mid_list, key=lambda x: x[0])[0]
@@ -227,9 +228,9 @@ class MapContext:
         y_max = max(mid_list, key=lambda x: x[1])[1]
 
         res = ""
-        for y in range(y_max, y_min-1, -1):
+        for y in range(y_max-1, y_min, -1):
             row = []
-            for x in range(x_min, x_max+1):
+            for x in range(x_min+1, x_max):
                 pos = x, y
                 if pos in mid_list and self.maps[pos].is_accessed:
                     el = self.maps[pos].print()
@@ -238,4 +239,4 @@ class MapContext:
                 row.append(el)
             for i in range(map_size):
                 res += reduce(lambda string, lss_strings: string + lss_strings[i], row, "") + "\n"
-        print(res)
+        logging.info(res)

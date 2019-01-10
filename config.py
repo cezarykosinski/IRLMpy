@@ -1,8 +1,9 @@
 EVO_CONFIG = {
-    'POPULATION_SIZE': 4,
-    'DROP_RATIO': 0.5,
+    'POPULATION_SIZE': 20,
+    'DROP_RATIO': 0.6,
+    'MUTATION_RATE': 0.1,
     'NO_OF_MAPS': 1,
-    'NO_OF_ITERATIONS': 1,
+    'NO_OF_ITERATIONS': 1150,
     'POOL_SIZE': 4
 }
 
@@ -18,5 +19,5 @@ GROUP_CONFIG = {
 }
 
 MAP_CONFIG = {
-    'SIZE': 30
+    'SIZE': 40
 }

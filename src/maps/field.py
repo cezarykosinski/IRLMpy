@@ -30,6 +30,8 @@ class Field:
             self.neighbours[s] += [fields[x - s][y + i] for i in rng if fields[x - s][y + i] not in self.neighbours[s]]
             self.neighbours[s] += [fields[x + i][y + s] for i in rng if fields[x + i][y + s] not in self.neighbours[s]]
             self.neighbours[s] += [fields[x + s][y - i] for i in rng if fields[x + s][y - i] not in self.neighbours[s]]
+        # for r in self.neighbours.values():
+        #     print(len(r))
 
     def set_neighbours_values(self):
         # import pdb; pdb.set_trace()
