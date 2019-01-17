@@ -94,11 +94,12 @@ class MapContext:
         for id in sorted_ids:
             start, dest = map_field_ranges[id].values()
             vals = self.maps[id].get_field_values_in_range(start, dest)
-            if rows_values[id[1]]:
+            if id[1] in rows_values:
                 rows_values[id[1]] = [row + vrow for row, vrow in zip(rows_values[id[1]], vals)]
             else:
                 rows_values[id[1]] = vals
-        return functools.reduce(lambda x, y: x + y, rows_values, [])
+        print(rows_values)
+        return functools.reduce(lambda x, y: x + y, rows_values.values(), [])
 
     def start_with_rogue(self, rogue):
         """
@@ -107,6 +108,7 @@ class MapContext:
         """
         self.maps.update({(0, 0): m.Map((0, 0), self)})
         self.reveal_map((0, 0))
+        self.current_map = self.maps[(0, 0)]
         rogue_response = rogue.get_init_data()
         while rogue.torch_size:
             pos = rogue_response['position']
@@ -114,8 +116,9 @@ class MapContext:
             map_field_ranges = MapContext.get_field_surroundings_ranges(rogue_response['position'],
                                                                         rogue_response['torch_size'],
                                                                         self.current_map.id)
-            for rng in map_field_ranges:
-                self.reveal_map(rng['id'])
+            print(map_field_ranges)
+            for rng in map_field_ranges.keys():
+                self.reveal_map(rng)
             n_pos = pos[0] + mov[0], pos[1] + mov[1]
             size = MC['SIZE'] - 1
             shift = (0, 0)
@@ -239,4 +242,4 @@ class MapContext:
                 row.append(el)
             for i in range(map_size):
                 res += reduce(lambda string, lss_strings: string + lss_strings[i], row, "") + "\n"
-        logging.info(res)
+        logging.info("\n" + res)

@@ -7,6 +7,7 @@ from constants import MAP_CONSTANTS as MCONSTANTS
 from src.maps.field import Field
 from src.maps.group import Group
 
+
 class Map:
     """
     todo
@@ -32,7 +33,7 @@ class Map:
         fields_no = MCONFIG['SIZE'] ** 2
         amount_of_noise = 0
 
-        seed(self._context.id*100 + self.id[0]*10 + self.id[1])
+        seed(self._context.id * 100 + self.id[0] * 10 + self.id[1])
 
         while (amount_of_noise / fields_no) < MCONSTANTS['INITIAL_RATIO']:
             x = randint(0, MCONFIG['SIZE'] - 1)
@@ -120,12 +121,45 @@ class Map:
         """
         return [row[MCONFIG['SIZE'] - FC['NEIGHBOURHOOD_SIZE']:] for row in self._fields]
 
+    def get_field_values_in_range(self, start, dest):
+        start_x, start_y = start
+        dest_x, dest_y = dest
+        output_fields = map(lambda row: list(map(lambda e: e.value, row[start_x:dest_x])), self._fields[start_y:dest_y])
+        return list(output_fields)
+
     def get_starting_field(self):
         return self._groups[0].starting_field_position
 
     def get_no_of_floors(self):
         func = partial(filter, (lambda f: f.value == FCONFIG['FLOOR']))
-        return reduce(lambda x, y: x+y, map(lambda row: len(list(func(row))), self._fields), 0)
+        return reduce(lambda x, y: x + y, map(lambda row: len(list(func(row))), self._fields), 0)
+
+    def get_longest_horizontal_path(self):
+        max_length = 0
+        for row in self._fields:
+            curr_len = 0
+            for f in row:
+                if f.value == FCONFIG['FLOOR']:
+                    curr_len += 1
+                else:
+                    if curr_len > max_length:
+                        max_length = curr_len
+                    curr_len = 0
+        return max_length
+
+    def get_longest_vertical_path(self):
+        max_length = 0
+        for i in range(MCONFIG['SIZE']):
+            column = map(lambda r: r[i], self._fields)
+            curr_len = 0
+            for f in column:
+                if f.value == FCONFIG['FLOOR']:
+                    curr_len += 1
+                else:
+                    if curr_len > max_length:
+                        max_length = curr_len
+                    curr_len = 0
+        return max_length
 
     def calculate(self):
         """
