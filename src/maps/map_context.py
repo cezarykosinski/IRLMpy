@@ -111,24 +111,24 @@ class MapContext:
         self.current_map = self.maps[(0, 0)]
         rogue_response = rogue.get_init_data()
         while rogue.torch_size:
-            pos = rogue_response['position']
-            mov = rogue_response['move']
+            pos_x, pos_y = rogue_response['position']
+            move_x, move_y = rogue_response['move']
             map_field_ranges = MapContext.get_field_surroundings_ranges(rogue_response['position'],
                                                                         rogue_response['torch_size'],
                                                                         self.current_map.id)
             print(map_field_ranges)
             for rng in map_field_ranges.keys():
                 self.reveal_map(rng)
-            n_pos = pos[0] + mov[0], pos[1] + mov[1]
+            n_pos_x, n_pos_y = pos_x + move_x, pos_y + move_y
             size = MC['SIZE'] - 1
             shift = (0, 0)
-            if n_pos[0] > size:
+            if n_pos_x > size:
                 shift[1] -= 1
-            elif n_pos[0] < 0:
+            elif n_pos_x < 0:
                 shift[1] += 1
-            if n_pos[1] > size:
+            if n_pos_y > size:
                 shift[0] += 1
-            elif n_pos[1] < 0:
+            elif n_pos_y < 0:
                 shift[0] -= 1
 
             n_mid = self.current_map.id[0] + shift[0], self.current_map.id[1] + shift[1]

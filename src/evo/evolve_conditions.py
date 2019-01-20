@@ -10,6 +10,23 @@ import random
 from src.maps.map_context import MapContext
 
 
+def display_n(population, n=1):
+    logging.info("Condi_evo: displaying_" + str(n) + "_best")
+    for condition_probe in population[:n]:
+        ctx = context_from_condi_probe(condition_probe)
+        ctx.start(EC['NO_OF_MAPS'])
+        logging.info("Displaying: " + str(condition_probe))
+        ctx.display()
+
+
+def display_nth(population, n):
+    logging.info("Condi_evo: displaying " + str(n) + "th of population")
+
+    ctx = context_from_condi_probe(population[n])
+    ctx.start(EC['NO_OF_MAPS'])
+    ctx.display()
+
+
 def initiate_population(size, n):
     logging.info("Condi_evo: initiating_population")
     signs = ["<", ">", "<=", ">="]
@@ -19,12 +36,8 @@ def initiate_population(size, n):
 def cut_condi_population(population, res):
     n_cutted_elems = (int(len(res) * EC['DROP_RATIO']))
     logging.info("Condi_evo: cutting_population by " + str(n_cutted_elems) + " elems")
-    res.sort()
     cut_res = res[:n_cutted_elems]
-    lucky_numbers = map(lambda x: x[1], cut_res)
-    for l in lucky_numbers:
-        logging.debug(l)
-    survivors = [population[n] for n in lucky_numbers]
+    survivors = [population[l] for l in map(lambda x: x[1], cut_res)]
     return survivors
 
 
@@ -51,9 +64,9 @@ def mutate_condi_population(population):
 
 def evolve_condi_population(population, res):
     logging.info("Condi_evo: evolving_population")
-    # res.sort()
-    # for entry in (map(lambda x: str((x[0], population[x[1]])), res)):
-    #     logging.info(entry)
+    res.sort()
+    for entry in (map(lambda x: str((x[0], population[x[1]])), res)):
+        logging.debug(entry)
     drop_ratio = 0.6666666666666666666
     amount_of_offspring = int(len(population) * drop_ratio)
     logging.debug("amount_of_offspring: "+ str(amount_of_offspring))
@@ -85,15 +98,6 @@ def context_from_condi_probe(condition_probe):
     return MapContext()
 
 
-def display_n_best(population, n=1):
-    logging.info("Condi_evo: displaying_" + str(n) + "_best")
-    for condition_probe in population[:n]:
-        ctx = context_from_condi_probe(condition_probe)
-        ctx.start(EC['NO_OF_MAPS'])
-        logging.info("Displaying: " + str(condition_probe))
-        ctx.display()
-
-
 def calculate(population, evaluation_functions, context_from_probe):
     logging.info("Condi_evo: calculating population:")
     logging.info(population)
@@ -107,9 +111,10 @@ def calculate(population, evaluation_functions, context_from_probe):
             res = pool.map(lambda probe: efun(probe, context_from_probe), population)
             scores = [(curr + [nscore], id) for nscore, (curr, id) in zip(res, scores)]
         evolve_condi_population(population, scores)
+        scores.sort()
 
         if it % 4 == 0:
-            display_n_best(population)
+            display_nth(population, scores[0][1])
         logging.info(time.time() - iter_start)
 
 
@@ -121,14 +126,14 @@ def main(ns=2):
     FC['NEIGHBOURHOOD_SIZE'] = ns
     FC['WAGES'] = [[1] if (lvl == 0) else [1]*8*lvl for lvl in range(0, ns+1)]
     logging.info(FC['WAGES'])
-    primary_metrics = [groupness_metric, balance_metric]
+    primary_metrics = [groupness_metric, balance_metric, complexity_metric]
     population = initiate_population(ns, EC['POPULATION_SIZE'])
     calculate(population, primary_metrics, context_from_condi_probe)
-    display_n_best(population, EC['POPULATION_SIZE'])
-    logging.info("FINISHED EVOLUTION WITH PRIMARY METRICS")
-    extra_evaluation = [complexity_metric]
-    calculate(population, extra_evaluation, context_from_condi_probe)
-    display_n_best(population, EC['POPULATION_SIZE'])
+    display_n(population, EC['POPULATION_SIZE'])
+    # logging.info("FINISHED EVOLUTION WITH PRIMARY METRICS")
+    # extra_evaluation = [complexity_metric]
+    # calculate(population, extra_evaluation, context_from_condi_probe)
+    # display_n(population, EC['POPULATION_SIZE'])
     logging.info(time.time() - gen_start)
 
 

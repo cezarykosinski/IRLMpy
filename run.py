@@ -1,5 +1,7 @@
 from src.maps.map_context import MapContext
+from src.maps.rogue import DefaultRogue
 ctx = MapContext()
-ctx.start(1)
+r = DefaultRogue()
+ctx.start_with_rogue(r)
 # print()
 # ctx.maps[(0, 0)].display()

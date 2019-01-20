@@ -1,7 +1,9 @@
+import random
+
 from constants import ROGUE_CONSTANTS as RC
 
 
-class Rogue:
+class DefaultRogue:
     """
     todo
     """
@@ -20,7 +22,7 @@ class Rogue:
 
     def make_move(self, map_response):
         self.position = map_response['position']
-        self.visible_surroundings = map_response['surroundings']
+        self.visible_surroundings = map_response['visible_surroundings']
         self.torch_time_left -= 1
         if self.torch_time_left <= 0:
             self.torch_time_left = RC['TORCH_BURN_TIME']
@@ -35,7 +37,7 @@ class Rogue:
         for r in self.visible_surroundings:
             print(r)
         decision = input('make decision')
-        while self._handle(decision):
+        while not (self._handle(decision)):
             decision = input('make decision')
         return self._handle(decision)
 
@@ -49,3 +51,23 @@ class Rogue:
         if decision == 'left':
             return 0, -1
         return False
+
+
+class RandomRogue(DefaultRogue):
+    def make_decision(self):
+        return random.choice([(1, 0), (-1, 0), (0, 1), (0, -1)])
+
+class SmartRogue(DefaultRogue):
+    def __init__(self, position=(0, 0), map_id=(0, 0)):
+        self.map_id = map_id
+        self.torch_size = RC['MAX_TORCH_SIZE']
+        self.torch_time_left = RC['TORCH_BURN_TIME']
+        self.position = position
+        self.visible_surroundings = []
+        self.direction = None
+
+    def make_decision(self):
+        if self.direction:
+            pass
+        else
+            
