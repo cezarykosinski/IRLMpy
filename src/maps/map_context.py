@@ -1,5 +1,6 @@
 import functools
 import logging
+import time
 from functools import cmp_to_key, reduce
 
 from constants import FIELD_CONSTANTS
@@ -19,7 +20,6 @@ class MapContext:
         """
         self.id = id
         self.maps = {}
-        self.current_map = None
         self.rogue = rogue
 
     @staticmethod
@@ -106,16 +106,16 @@ class MapContext:
         todo
         :return:
         """
-        self.maps.update({(0, 0): m.Map((0, 0), self)})
+        self.maps.update({(0, 0): m.Map(self, (0, 0))})
         self.reveal_map((0, 0))
-        self.current_map = self.maps[(0, 0)]
+        current_map = self.maps[(0, 0)]
         rogue_response = rogue.get_init_data()
         while rogue.torch_size:
             pos_x, pos_y = rogue_response['position']
             move_x, move_y = rogue_response['move']
             map_field_ranges = MapContext.get_field_surroundings_ranges(rogue_response['position'],
                                                                         rogue_response['torch_size'],
-                                                                        self.current_map.id)
+                                                                        current_map.id)
             print(map_field_ranges)
             for rng in map_field_ranges.keys():
                 self.reveal_map(rng)
@@ -131,9 +131,9 @@ class MapContext:
             elif n_pos_y < 0:
                 shift[0] -= 1
 
-            n_mid = self.current_map.id[0] + shift[0], self.current_map.id[1] + shift[1]
-            self.current_map = self.maps[n_mid]
-            map_response = self.current_map.apply_move(rogue_response)
+            n_mid = current_map.id[0] + shift[0], current_map.id[1] + shift[1]
+            current_map = self.maps[n_mid]
+            map_response = current_map.apply_move(rogue_response)
             map_response['visible_surroundings'] = self.get_field_surroundings_values(map_field_ranges)
             rogue_response = rogue.make_move(map_response)
 
@@ -142,14 +142,14 @@ class MapContext:
         todo
         :return:
         """
-        self.maps.update({(0, 0): m.Map((0, 0), self)})
+        self.maps.update({(0, 0): m.Map(self, (0, 0))})
         queue = [((0, 0), size)]
         while queue:
             mid, size = queue[0]
             queue = queue[1:]
             self.reveal_map(mid)
             if size:
-                for nid in self.get_map_neighbours_ids(mid):
+                for nid in self._get_map_neighbours_ids(mid):
                     if not self.maps[nid].is_accessed:
                         queue += [(nid, size-1)]
 
@@ -163,7 +163,7 @@ class MapContext:
         self.maps[map_id].commit()
 
     @staticmethod
-    def get_map_neighbours_ids(map_id):
+    def _get_map_neighbours_ids(map_id):
         return [(map_id[0] + x, map_id[1] + y)
                 for x, y in [(-1, 1), (0, 1),
                              (1, 1), (-1, 0),
@@ -171,16 +171,11 @@ class MapContext:
                              (0, -1), (1, -1)]]
 
     def generate_neighbours(self, map_id):
-        """
-        todo
-        :return:
-        """
-
         map_keys = self.maps.keys()
-        neighbour_map_ids = self.get_map_neighbours_ids(map_id)
+        neighbour_map_ids = MapContext._get_map_neighbours_ids(map_id)
         for key in neighbour_map_ids:
             if key not in map_keys:
-                self.maps.update({key: m.Map(key, self)})
+                self.maps.update({key: m.Map(self, key)})
 
     def get_northeast_bound(self, p):
         new_pos = p[0] + 1, p[1] + 1

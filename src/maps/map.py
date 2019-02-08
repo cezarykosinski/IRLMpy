@@ -13,7 +13,7 @@ class Map:
     todo
     """
 
-    def __init__(self, id, ctx):
+    def __init__(self, ctx, id =(0,0)):
         self.id = id
         self._context = ctx
 
@@ -32,7 +32,6 @@ class Map:
         """
         fields_no = MCONFIG['SIZE'] ** 2
         amount_of_noise = 0
-
         seed(self._context.id * 100 + self.id[0] * 10 + self.id[1])
 
         while (amount_of_noise / fields_no) < MCONSTANTS['INITIAL_RATIO']:
@@ -134,6 +133,12 @@ class Map:
         func = partial(filter, (lambda f: f.value == FCONFIG['FLOOR']))
         return reduce(lambda x, y: x + y, map(lambda row: len(list(func(row))), self._fields), 0)
 
+    def get_no_of_groups_with_less_than_two_exits(self):
+        return reduce(lambda curval, g: curval + [0, 1][g.no_of_exits < 2], self._groups, 0)
+
+    def get_no_of_groups_with_at_least_two_exits(self):
+        return reduce(lambda curval, g: curval + [0, 1][g.no_of_exits > 2], self._groups, 0)
+
     def get_longest_horizontal_path(self):
         max_length = 0
         for row in self._fields:
@@ -166,11 +171,12 @@ class Map:
         todo
         :return:
         """
+        self._set_fields_neighbours_values()
         for i in range(MCONSTANTS['NUMBER_OF_ITERATIONS']):
-            self._set_fields_neighbours_values()
             for row in self._fields:
                 for f in row:
                     f.calculate()
+            self._set_fields_neighbours_values()
 
     def group_fields(self):
         """
@@ -182,6 +188,7 @@ class Map:
                 if f.value == FCONFIG['FLOOR'] and f.group_id == GC['NO_GROUP_ID']:
                     new_group = Group(f)
                     new_group.find_rest_of_the_fields(self._fields)
+                    new_group.count_exits()
                     self._groups.append(new_group)
 
     # noinspection PyAttributeOutsideInit

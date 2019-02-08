@@ -1,54 +1,34 @@
 from functools import reduce
 
-from src.maps.rogue import DefaultRogue
 from config import MAP_CONFIG as MC, EVO_CONFIG as EC
 
 
-def balance_metric(probe, context_from_probe):
+def balance_criterion(map):
     """
-    for a given context of population's probe of conditions, calculates the ratio between floor and rock fields on an average map
-    :param context_from_probe:
-    :param probe: list of conditions (pairs containing comparison string and an int value)
+    for a given context of population's sample of conditions, calculates the ratio between floor and rock fields on an average map
+    :param sample: list of conditions: id, val (pairs containing comparison string and an int value), score
     """
-    ctx = context_from_probe(probe)
-    ctx.start(EC['NO_OF_MAPS'])
-    func = lambda balance, map: balance + abs(map.get_no_of_floors() - MC['SIZE'] ** 2 // 2)
-    return reduce(func, filter(lambda m: m.is_accessed, ctx.maps.values()), 0)
+    return 0.2 < (map.get_no_of_floors() / MC['SIZE']**2) < 0.8
 
 
-def groupness_metric(probe, context_from_probe):
+def groupness_criterion(map):
     """
-    for a given context of population's probe of conditions, calculates the average number of individual groups per map
-    :param context_from_probe:
-    :param probe: list of conditions (pairs containing comparison string and an int value)
+    for a given context of population's sample of conditions, calculates the average number of individual groups per map
+    :param sample: list of conditions: id, val (pairs containing comparison string and an int value), score
     """
-    ctx = context_from_probe(probe)
-    ctx.start(EC['NO_OF_MAPS'])
-    n_groups = 0
-    for m in filter(lambda m: m.is_accessed, ctx.maps.values()):
-        map_n_groups = len(m._groups)
-        if map_n_groups == 0:
-            map_n_groups = 987654321
-        n_groups += map_n_groups
-    return n_groups
+    return map.get_no_of_groups_with_less_than_two_exits() == 0 and map.get_no_of_groups_at_least_two_exits() > 0
 
 
-def complexity_metric(probe, context_from_probe):
-    """
-    for a given context of population's probe of conditions, calculates the length of a maximum straight line of floors
-    :param context_from_probe:
-    :param probe: list of conditions (pairs containing comparison string and an int value)
-    """
-    ctx = context_from_probe(probe)
-    ctx.start(EC['NO_OF_MAPS'])
-    longest_line = 0
-    for m in ctx.maps.values():
-        longest_line = max(m.get_longest_horizontal_path(), m.get_longest_vertical_path(), longest_line)
-    return longest_line
+def qualify_map(map, eval_functions):
+    return reduce(lambda x, fun: x and fun(map), eval_functions, True)
 
 
-def reach_simulation(probe, context_from_probe):
-    ctx = context_from_probe(probe)
+def sample_acceptance_score(sample, maps_generator_from_sample):
+    return list(map(lambda m: qualify_map(m, [balance_criterion, groupness_criterion]), maps_generator_from_sample(sample))).count(True)
+
+
+def reach_simulation(sample, map_from_sample):
+    ctx = map_from_sample(sample)
 
     ctx.start_with_rogue()
-
+    pass

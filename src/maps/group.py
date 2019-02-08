@@ -14,18 +14,10 @@ class Group:
         """
         self.id = Group.LATEST_ID
         self.starting_field_position = starting_field.position
+        self.no_of_exits = 0
         self._border = []
         self._fields_positions = []
         Group.LATEST_ID += 1
-
-    def find_rest_of_the_fields(self, fields):
-        """
-        todo
-        :param fields:
-        :return:
-        """
-        self._fields_positions = self.assign_group_to_fields(fields)
-        self.update_the_border(fields)
 
     def update_the_border(self, fields):
         """
@@ -37,12 +29,12 @@ class Group:
                         or MC['SIZE'] - 1 in fields[x][y].position
                         or 0 in fields[x][y].position]
 
-    def has_wayout_already(self):
-        """
-        todo
-        :return:
-        """
-        return len([pos for pos in self._border if MC['SIZE']-1 in pos]) > 0
+    def count_exits(self):
+        is_left_exit = 0 in map(lambda f: f[1], self._border)
+        is_right_exit = MC['SIZE'] in map(lambda f: f[1], self._border)
+        is_top_exit = 0 in map(lambda f: f[0], self._border)
+        is_bottom_exit = MC['SIZE'] in map(lambda f: f[0], self._border)
+        return [is_left_exit, is_right_exit, is_top_exit, is_bottom_exit].count(True)
 
     def assign_group_to_fields(self, fields):
         start_pos_x, start_pos_y = self.starting_field_position
@@ -58,3 +50,12 @@ class Group:
                     n.group_id = self.id
                     queue.append(n.position)
         return assigned_fields
+
+    def find_rest_of_the_fields(self, fields):
+        """
+        todo
+        :param fields:
+        :return:
+        """
+        self._fields_positions = self.assign_group_to_fields(fields)
+        self.update_the_border(fields)

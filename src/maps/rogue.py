@@ -69,5 +69,6 @@ class SmartRogue(DefaultRogue):
     def make_decision(self):
         if self.direction:
             pass
-        else
-            
+        else:
+            pass
+
