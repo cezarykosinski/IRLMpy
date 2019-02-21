@@ -31,10 +31,10 @@ class Group:
 
     def count_exits(self):
         is_left_exit = 0 in map(lambda f: f[1], self._border)
-        is_right_exit = MC['SIZE'] in map(lambda f: f[1], self._border)
+        is_right_exit = (MC['SIZE']-1) in map(lambda f: f[1], self._border)
         is_top_exit = 0 in map(lambda f: f[0], self._border)
-        is_bottom_exit = MC['SIZE'] in map(lambda f: f[0], self._border)
-        return [is_left_exit, is_right_exit, is_top_exit, is_bottom_exit].count(True)
+        is_bottom_exit = (MC['SIZE']-1) in map(lambda f: f[0], self._border)
+        self.no_of_exits = [is_left_exit, is_right_exit, is_top_exit, is_bottom_exit].count(True)
 
     def assign_group_to_fields(self, fields):
         start_pos_x, start_pos_y = self.starting_field_position
