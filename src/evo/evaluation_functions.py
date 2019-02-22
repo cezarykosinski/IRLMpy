@@ -10,7 +10,7 @@ def balance_criterion(map):
     """
     if 0.2 < (map.get_no_of_floors() / MC['SIZE']**2) < 0.8:
         return 1000
-    return 0
+    return -500
 
 
 def groupness_criterion(map):
@@ -18,11 +18,12 @@ def groupness_criterion(map):
     for a given context of population's sample of conditions, calculates the average number of individual groups per map
     :param sample: list of conditions: id, val (pairs containing comparison string and an int value), score
     """
+    top_score = 10000
     if map.get_no_of_groups_with_less_than_two_exits() == 0 and map.get_no_of_groups_with_at_least_two_exits() > 0:
-        return 10000
+        return top_score
     elif map.get_no_of_groups_with_less_than_two_exits() > 0 and map.get_no_of_groups_with_at_least_two_exits() > 0:
-        return 1
-    return 0
+        return top_score - 100 * map.get_no_of_groups_with_less_than_two_exits()
+    return -top_score // 2
 
 
 def qualify_map(map, eval_functions):
