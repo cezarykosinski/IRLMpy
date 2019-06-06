@@ -101,13 +101,17 @@ class MapContext:
         print(rows_values)
         return functools.reduce(lambda x, y: x + y, rows_values.values(), [])
 
+    def initialize_first_map(self):
+        self.maps.update({(0, 0): m.Map(self, (0, 0))})
+        self.reveal_map((0, 0))
+
+
     def start_with_rogue(self, rogue):
         """
         todo
         :return:
         """
-        self.maps.update({(0, 0): m.Map(self, (0, 0))})
-        self.reveal_map((0, 0))
+        self.initialize_first_map()
         current_map = self.maps[(0, 0)]
         rogue_response = rogue.get_init_data()
         while rogue.torch_size:
@@ -137,21 +141,22 @@ class MapContext:
             map_response['visible_surroundings'] = self.get_field_surroundings_values(map_field_ranges)
             rogue_response = rogue.make_move(map_response)
 
-    def start(self, size=0):
+    def start(self, pos=(0,0), size=0):
         """
         todo
         :return:
         """
-        self.maps.update({(0, 0): m.Map(self, (0, 0))})
-        queue = [((0, 0), size)]
+        queue = [(pos, size)]
         while queue:
             mid, size = queue[0]
             queue = queue[1:]
-            self.reveal_map(mid)
+            if not self.maps[mid].is_accessed:
+                self.reveal_map(mid)
             if size:
                 for nid in self._get_map_neighbours_ids(mid):
                     if not self.maps[nid].is_accessed:
                         queue += [(nid, size-1)]
+
 
     def reveal_map(self, map_id):
         """
@@ -231,10 +236,10 @@ class MapContext:
             for x in range(x_min+1, x_max):
                 pos = x, y
                 if pos in mid_list and self.maps[pos].is_accessed:
-                    el = self.maps[pos].print()
+                    el = self.maps[pos].to_string()
                 else:
                     el = ["#" * map_size] * map_size
                 row.append(el)
             for i in range(map_size):
                 res += reduce(lambda string, lss_strings: string + lss_strings[i], row, "") + "\n"
-        logging.info("\n" + res)
+        print(res)
